@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>THE LAST DREAM</title> 
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=IM+Fell+English&family=UnifrakturCook:wght@700&display=swap" rel="stylesheet">
+body {
+  font-family: 'IM Fell English', serif;
+}
+
+h1, h2, button {
+  font-family: 'Cinzel Decorative', serif;
+}
+
+#intro h1 {
+  font-family: 'UnifrakturCook', cursive;
+  letter-spacing: 2px;
+}
+
+#message, #speaker {
+  font-family: 'IM Fell English', serif;}
+  <style>
+*{box-sizing:border-box}
+body{
+ margin:0;overflow:hidden;background:#030303;
+ color:#eee;font-family:Georgia,serif;
+ touch-action:none;
+}
+canvas{display:block}
+#intro{
+ position:fixed;inset:0;z-index:10;
+ background:radial-gradient(circle at 50% 35%,#240606,#080303 55%,#000);
+ display:flex;flex-direction:column;
+ align-items:center;justify-content:center;
+ text-align:center;padding:25px;
+}
+#intro h1{
+ color:#a20d19;font-size:clamp(36px,10vw,65px);
+ letter-spacing:5px;margin:0;
+ text-shadow:0 0 25px #8b0000;
+}
+.subtitle{color:#aaa;letter-spacing:4px;font-size:10px;margin:14px}
+button{
+ font-family:Georgia,serif;cursor:pointer;
+}
+#start{
+ margin-top:35px;padding:15px 40px;
+ border:1px solid #9c1720;background:#160303;
+ color:#eee;letter-spacing:3px;font-size:14px;
+}
+#start:active{background:#650b12}
+#hint{color:#888;font-size:12px;margin-top:25px}
+#hud{
+ position:fixed;inset:0;pointer-events:none;
+ display:none;
+}
+#chapter{
+ position:absolute;top:18px;left:0;right:0;
+ text-align:center;color:#c6a6a6;
+ font-size:11px;letter-spacing:3px;
+ text-shadow:0 2px 8px black;
+}
+#objective{
+ position:absolute;top:43px;left:15px;
+ color:#aaa;font-size:12px;
+ text-shadow:0 2px 5px black;
+}
+#inventory{
+ position:absolute;top:18px;right:15px;
+ color:#bd7777;font-size:12px;
+}
+#joystick{
+ position:absolute;bottom:28px;left:25px;
+ width:112px;height:112px;border-radius:50%;
+ background:#ffffff12;border:1px solid #ffffff40;
+ pointer-events:auto;touch-action:none;
+}
+#knob{
+ position:absolute;width:45px;height:45px;
+ border-radius:50%;left:33px;top:33px;
+ background:#9d202866;border:1px solid #c56a6a;
+}
+#interact{
+ position:absolute;bottom:48px;right:25px;
+ width:75px;height:75px;border-radius:50%;
+ border:1px solid #9e3030;background:#260707cc;
+ color:white;pointer-events:auto;
+ font-size:11px;letter-spacing:1px;
+}
+#dialogue{
+ display:none;position:fixed;z-index:15;
+ bottom:0;left:0;right:0;
+ padding:23px 20px 28px;
+ background:linear-gradient(transparent,#090606 12%,#090606);
+ border-top:1px solid #68151c;
+}
+#speaker{
+ color:#c44b55;font-size:11px;
+ letter-spacing:3px;margin-bottom:10px;
+}
+#message{font-size:16px;line-height:1.6;color:#eee}
+#choices{display:grid;gap:9px;margin-top:16px}
+.choice{
+ padding:12px;text-align:left;
+ border:1px solid #542026;
+ background:#16090b;color:#ddd;font-size:13px;
+}
+.choice:active{background:#521017}
+#toast{
+ position:fixed;z-index:5;top:90px;
+ left:50%;transform:translateX(-50%);
+ color:#e1b4b4;background:#140606dd;
+ border:1px solid #68252b;padding:10px 15px;
+ font-size:12px;display:none;text-align:center;
+}
+</style>
+</head>
+
+<body>
+
+<div id="intro">
+ <div class="subtitle">A DARK ROMANTIC FANTASY</div>
+ <h1>THE LAST<br>DREAM</h1>
+ <div class="subtitle">SOME MEMORIES NEVER DIE</div>
+ <button id="start">BEGIN THE DREAM</button>
+ <div id="hint">Una historia escrita entre sombras...</div>
+</div>
+
+<div id="hud">
+ <div id="chapter">CHAPTER I · THE FORGOTTEN CASTLE</div>
+ <div id="objective">Objetivo: Explora el castillo.</div>
+ <div id="inventory">RECUERDOS: <span id="count">0</span></div>
+ <div id="joystick"><div id="knob"></div></div>
+ <button id="interact">INTERACTUAR</button>
+</div>
+
+<div id="toast"></div>
+
+<div id="dialogue">
+ <div id="speaker">UNKNOWN</div>
+ <div id="message"></div>
+ <div id="choices"></div>
+</div>
+
+<script type="module">
+import * as THREE from
+'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+
+/* ESCENA */
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x030303);
+scene.fog = new THREE.FogExp2(0x080505,0.026);
+
+const camera = new THREE.PerspectiveCamera(
+ 65,innerWidth/innerHeight,0.1,150
+);
+
+const renderer = new THREE.WebGLRenderer({
+ antialias:true,alpha:false
+});
+renderer.setSize(innerWidth,innerHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+document.body.appendChild(renderer.domElement);
+
+/* ILUMINACIÓN */
+
+scene.add(new THREE.HemisphereLight(0x777080,0x100707,1.3));
+
+const moonLight = new THREE.PointLight(0xb51b26,35,65);
+moonLight.position.set(0,12,-12);
+scene.add(moonLight);
+
+const redLight = new THREE.PointLight(0x6d080e,12,25);
+redLight.position.set(0,3,-8);
+scene.add(redLight);
+
+/* MATERIALES */
+
+const black = new THREE.MeshStandardMaterial({
+ color:0x111012,roughness:0.95
+});
+const stone = new THREE.MeshStandardMaterial({
+ color:0x252124,roughness:1
+});
+const red = new THREE.MeshStandardMaterial({
+ color:0x8e0713,roughness:0.7,
+ emissive:0x4c0006,emissiveIntensity:0.8
+});
+
+/* CONSTRUCTORES */
+
+function box(w,h,d,mat,x,y,z){
+ const mesh = new THREE.Mesh(
+  new THREE.BoxGeometry(w,h,d),mat
+ );
+ mesh.position.set(x,y,z);
+ scene.add(mesh);
+ return mesh;
+}
+
+function cylinder(rt,rb,h,mat,x,y,z,segments=8){
+ const mesh = new THREE.Mesh(
+  new THREE.CylinderGeometry(rt,rb,h,segments),mat
+ );
+ mesh.position.set(x,y,z);
+ scene.add(mesh);
+ return mesh;
+}
+
+function sphere(r,mat,x,y,z){
+ const mesh = new THREE.Mesh(
+  new THREE.SphereGeometry(r,12,10),mat
+ );
+ mesh.position.set(x,y,z);
+ scene.add(mesh);
+ return mesh;
+}
+
+/* SUELO */
+
+const ground = new THREE.Mesh(
+ new THREE.PlaneGeometry(100,100),
+ new THREE.MeshStandardMaterial({
+  color:0x100d0e,roughness:1
+ })
+);
+ground.rotation.x=-Math.PI/2;
+ground.position.y=-0.06;
+scene.add(ground);
+
+/* LUNA ROJO SANGRE */
+
+const moon = sphere(3.1,red,9,15,-32);
+const moonGlow = new THREE.PointLight(0xb00018,20,45);
+moonGlow.position.set(9,14,-30);
+scene.add(moonGlow);
+
+/* ESTRELLAS */
+
+const stars=[];
+for(let i=0;i<170;i++){
+ const s=sphere(
+  Math.random()*0.045+0.015,
+  new THREE.MeshBasicMaterial({
+   color:i%8===0?0xb92b37:0xd9d2d2,
+   transparent:true
+  }),
+  (Math.random()-0.5)*75,
+  7+Math.random()*30,
+  -20-Math.random()*65
+ );
+ s.userData.phase=Math.random()*6.28;
+ s.userData.speed=0.5+Math.random()*1.5;
+ stars.push(s);
+}
+
+/* NUBES OSCURAS */
+
+const clouds=[];
+for(let i=0;i<13;i++){
+ const group=new THREE.Group();
+ for(let j=0;j<5;j++){
+  const c=new THREE.Mesh(
+   new THREE.SphereGeometry(1,8,6),
+   new THREE.MeshBasicMaterial({
+    color:0x171113,transparent:true,opacity:0.38
+   })
+  );
+  c.scale.set(2+Math.random()*3,0.4,1);
+  c.position.x=j*1.5;
+  group.add(c);
+ }
+ group.position.set(
+  (Math.random()-0.5)*55,
+  9+Math.random()*9,
+  -25-Math.random()*35
+ );
+ scene.add(group);
+ clouds.push(group);
+}
+
+/* CASTILLO */
+
+// Cuerpo principal
+box(18,12,3,stone,0,6,-24);
+
+// Torres laterales
+for(const x of [-10,10]){
+ cylinder(2.2,2.5,15,black,x,7.5,-24,8);
+ const roof=new THREE.Mesh(
+  new THREE.ConeGeometry(2.8,5,8),
+  black
+ );
+ roof.position.set(x,17.5,-24);
+ scene.add(roof);
+}
+
+// Torre central
+cylinder(2.6,3,18,stone,0,9,-27,8);
+const top=new THREE.Mesh(
+ new THREE.ConeGeometry(3.4,6,8),black
+);
+top.position.set(0,21,-27);
+scene.add(top);
+
+// Ventanas rojas
+for(let x of [-6,-3,3,6]){
+ box(0.7,1.5,0.15,red,x,6,-22.35);
+ box(0.7,1.5,0.15,red,x,10,-22.35);
+}
+
+/* PUERTA */
+
+box(3.5,5,0.6,black,0,2.5,-21);
+box(0.12,5.3,0.15,red,0,2.65,-20.65);
+
+/* COLUMNAS DEL PATIO */
+
+for(let x of [-7,7]){
+ for(let z of [-3,-9,-15]){
+  cylinder(0.65,0.8,4,stone,x,2,z,8);
+  cylinder(0.9,0.9,0.35,black,x,4.15,z,8);
+ }
+}
+
+/* ROSAS */
+
+const roses=[];
+for(let i=0;i<18;i++){
+ const x=(Math.random()-0.5)*24;
+ const z=-2-Math.random()*19;
+ cylinder(0.045,0.06,0.9,black,x,0.45,z,5);
+ const flower=sphere(0.22,red,x,1,z);
+ flower.scale.set(1,0.65,1);
+ roses.push(flower);
+}
+
+/* PERSONAJE */
+
+const player=new THREE.Group();
+scene.add(player);
+
+const skin=new THREE.MeshStandardMaterial({color:0xc49a80});
+const suit=new THREE.MeshStandardMaterial({color:0x09090b});
+const hair=new THREE.MeshStandardMaterial({color:0x54301e});
+
+const body=new THREE.Mesh(
+ new THREE.BoxGeometry(0.75,1.1,0.42),suit
+);
+body.position.y=1.35;
+player.add(body);
+
+const head=new THREE.Mesh(
+ new THREE.SphereGeometry(0.34,12,10),skin
+);
+head.position.y=2.15;
+player.add(head);
+
+const hairTop=new THREE.Mesh(
+ new THREE.SphereGeometry(0.36,12,8,0,Math.PI*2,0,Math.PI/2),
+ hair
+);
+hairTop.position.y=2.27;
+player.add(hairTop);
+
+for(let x of [-0.22,0.22]){
+ const leg=new THREE.Mesh(
+  new THREE.BoxGeometry(0.25,0.85,0.3),suit
+ );
+ leg.position.set(x,0.48,0);
+ player.add(leg);
+}
+
+for(let x of [-0.48,0.48]){
+ const arm=new THREE.Mesh(
+  new THREE.BoxGeometry(0.22,0.95,0.25),suit
+ );
+ arm.position.set(x,1.4,0);
+ player.add(arm);
+}
+
+player.position.set(0,0,4);
+
+/* CARTA */
+
+const letterGroup=new THREE.Group();
+letterGroup.position.set(2,0,-5);
+scene.add(letterGroup);
+
+const table=box(1.6,0.2,1.2,stone,2,0.8,-5);
+const letter=box(0.65,0.04,0.8,
+ new THREE.MeshStandardMaterial({color:0xd1c2a6}),
+ 2,0.94,-5
+);
+
+/* POSICIÓN DE CÁMARA */
+
+camera.position.set(0,4,9);
+camera.lookAt(0,1,-3);
+
+/* ESTADO DEL JUEGO */
+
+let started=false;
+let memories=0;
+let chosen=false;
+let ending=false;
+let dialogOpen=false;
+let walkX=0,walkY=0;
+let keys={};
+
+const intro=document.getElementById('intro');
+const hud=document.getElementById('hud');
+const dialogue=document.getElementById('dialogue');
+const message=document.getElementById('message');
+const choices=document.getElementById('choices');
+const objective=document.getElementById('objective');
+
+/* DIÁLOGOS */
+
+function showDialog(speaker,text,options){
+ dialogOpen=true;
+ dialogue.style.display='block';
+ document.getElementById('speaker').textContent=speaker;
+ message.textContent=text;
+ choices.innerHTML='';
+
+ options.forEach(option=>{
+  const b=document.createElement('button');
+  b.className='choice';
+  b.textContent=option.label;
+  b.onclick=()=>{
+   option.action();
+  };
+  choices.appendChild(b);
+ });
+}
+
+function closeDialog(){
+ dialogOpen=false;
+ dialogue.style.display='none';
+}
+
+function toast(text){
+ const el=document.getElementById('toast');
+ el.textContent=text;
+ el.style.display='block';
+ setTimeout(()=>el.style.display='none',2200);
+}
+
+/* CARTA INTERACTIVA */
+
+function readLetter(){
+ if(chosen)return;
+
+ showDialog(
+  'UNA CARTA SIN DESTINATARIO',
+  '«Si estás leyendo esto, has llegado más lejos de lo que imaginaba. Hay recuerdos que esperan ser encontrados. Pero no todos cuentan la misma historia...»',
+  [
+   {
+    label:'A. Leer la carta hasta el final',
+    action:()=>{
+     memories++;
+     chosen=true;
+     document.getElementById('count').textContent=memories;
+     objective.textContent='Objetivo: Encuentra la puerta del castillo.';
+     closeDialog();
+     toast('Has recuperado un recuerdo.');
+    }
+   },
+   {
+    label:'B. Guardarla sin leer',
+    action:()=>{
+     chosen=true;
+     closeDialog();
+     toast('Has guardado la carta.');
+     objective.textContent='Objetivo: Encuentra la puerta del castillo.';
+    }
+   },
+   {
+    label:'C. Buscar quién la escribió',
+    action:()=>{
+     memories++;
+     chosen=true;
+     document.getElementById('count').textContent=memories;
+     closeDialog();
+     toast('Una nueva pista ha aparecido.');
+     objective.textContent='Objetivo: Encuentra la puerta del castillo.';
+    }
+   }
+  ]
+ );
+}
+
+/* PUERTA Y PRIMER ENCUENTRO */
+
+function openGate(){
+ if(!chosen){
+  showDialog('LA PUERTA',
+   'La entrada está cerrada. Sientes que has olvidado algo importante.',
+   [{label:'Volver',action:closeDialog}]
+  );
+  return;
+ }
+
+ if(ending)return;
+
+ ending=true;
+ showDialog(
+  'UNA VOZ DESCONOCIDA',
+  '«Por fin has llegado... Pero todavía no sabes a quién estás buscando. Sigue caminando. Quizá nuestros caminos vuelvan a cruzarse».',
+  [{
+   label:'Continuar explorando',
+   action:()=>{
+    closeDialog();
+    toast('Fin de la primera demostración. El sueño continúa...');
+    ending=false;
+   }
+  }]
+ );
+}
+
+/* INTERACCIÓN POR DISTANCIA */
+
+function interact(){
+ if(dialogOpen)return;
+
+ const dx=player.position.x-2;
+ const dz=player.position.z+5;
+ const letterDistance=Math.sqrt(dx*dx+dz*dz);
+
+ const gateDistance=Math.sqrt(
+  player.position.x**2+
+  (player.position.z+21)**2
+ );
+
+ if(letterDistance<3.2){
+  readLetter();
+ }else if(gateDistance<5){
+  openGate();
+ }else{
+  toast('No hay nada con lo que interactuar aquí.');
+ }
+}
+
+/* CONTROLES TÁCTILES */
+
+const joystick=document.getElementById('joystick');
+const knob=document.getElementById('knob');
+
+let joyActive=false;
+let joyId=null;
+
+joystick.addEventListener('pointerdown',e=>{
+ joyActive=true;
+ joyId=e.pointerId;
+ joystick.setPointerCapture(e.pointerId);
+ moveJoy(e);
+});
+
+joystick.addEventListener('pointermove',e=>{
+ if(joyActive && e.pointerId===joyId)moveJoy(e);
+});
+
+function moveJoy(e){
+ const r=joystick.getBoundingClientRect();
+ let x=e.clientX-(r.left+r.width/2);
+ let y=e.clientY-(r.top+r.height/2);
+ const length=Math.sqrt(x*x+y*y);
+ if(length>35){x=x/length*35;y=y/length*35;}
+ knob.style.transform=`translate(${x}px,${y}px)`;
+ walkX=x/35;
+ walkY=y/35;
+}
+
+function resetJoy(){
+ joyActive=false;
+ walkX=0;walkY=0;
+ knob.style.transform='translate(0px,0px)';
+}
+joystick.addEventListener('pointerup',resetJoy);
+joystick.addEventListener('pointercancel',resetJoy);
+
+document.getElementById('interact').addEventListener('pointerdown',e=>{
+ e.preventDefault();interact();
+});
+
+window.addEventListener('keydown',e=>{
+ keys[e.key.toLowerCase()]=true;
+ if(e.key==='e'||e.key==='Enter')interact();
+});
+window.addEventListener('keyup',e=>{
+ keys[e.key.toLowerCase()]=false;
+});
+
+/* INICIAR */
+
+document.getElementById('start').onclick=()=>{
+ started=true;
+ intro.style.display='none';
+ hud.style.display='block';
+ toast('Explora el patio del castillo.');
+};
+
+/* ANIMACIÓN */
+
+const clock=new THREE.Clock();
+let elapsed=0;
+
+function animate(){
+ requestAnimationFrame(animate);
+ const dt=Math.min(clock.getDelta(),0.04);
+ elapsed+=dt;
+
+ // Estrellas titilantes
+ stars.forEach(s=>{
+  const glow=0.55+Math.sin(elapsed*s.userData.speed+s.userData.phase)*0.4;
+  s.material.opacity=glow;
+  s.position.y+=Math.sin(elapsed*0.3+s.userData.phase)*0.0008;
+ });
+
+ // Nubes desplazándose
+ clouds.forEach(c=>{
+  c.position.x+=dt*0.12;
+  if(c.position.x>35)c.position.x=-40;
+ });
+
+ // Luz de luna pulsante
+ moonLight.intensity=30+Math.sin(elapsed*0.7)*4;
+
+ // Rosa flotante sobre la mesa
+ letter.position.y=0.94+Math.sin(elapsed*1.8)*0.035;
+
+ if(started && !dialogOpen){
+  let x=walkX;
+  let z=walkY;
+
+  if(keys['a']||keys['arrowleft'])x-=1;
+  if(keys['d']||keys['arrowright'])x+=1;
+  if(keys['w']||keys['arrowup'])z-=1;
+  if(keys['s']||keys['arrowdown'])z+=1;
+
+  const len=Math.sqrt(x*x+z*z);
+  if(len>1){x/=len;z/=len;}
+
+  const speed=4*dt;
+  player.position.x+=x*speed;
+  player.position.z+=z*speed;
+
+  player.position.x=THREE.MathUtils.clamp(player.position.x,-14,14);
+  player.position.z=THREE.MathUtils.clamp(player.position.z,-19,8);
+
+  if(len>0.1){
+   player.rotation.y=Math.atan2(x,z);
+   body.position.y=1.35+Math.sin(elapsed*10)*0.035;
+  }else{
+   body.position.y=1.35;
+  }
+ }
+
+ // Cámara que sigue al protagonista
+ if(started){
+  const target=new THREE.Vector3(
+   player.position.x,
+   4.2,
+   player.position.z+8
+  );
+  camera.position.lerp(target,0.06);
+  camera.lookAt(
+   player.position.x,
+   1.3,
+   player.position.z-4
+  );
+ }
+
+ renderer.render(scene,camera);
+}
+animate();
+
+/* ADAPTACIÓN A PANTALLAS */
+
+window.addEventListener('resize',()=>{
+ camera.aspect=innerWidth/innerHeight;
+ camera.updateProjectionMatrix();
+ renderer.setSize(innerWidth,innerHeight);
+});
+</script>
+</body>
+</html>
