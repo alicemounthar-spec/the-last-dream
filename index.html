@@ -10,72 +10,177 @@
 
 <style>
 *{box-sizing:border-box}
+
 body{
  margin:0;overflow:hidden;background:#08070c;color:#eee;
  font-family:'IM Fell English',serif;touch-action:none;
 }
+
 canvas{display:block}
+
+/* PORTADA DEL JUEGO */
 #intro{
  position:fixed;inset:0;z-index:10;
  display:flex;flex-direction:column;
  justify-content:center;align-items:center;
- background:radial-gradient(circle,#481321,#160b13 55%,#050408);
+ background:
+  linear-gradient(180deg,rgba(8,5,12,.30),rgba(8,5,12,.78)),
+  radial-gradient(circle at 50% 35%,rgba(105,18,43,.18),rgba(5,4,8,.72));
  text-align:center;padding:25px;
+ overflow:hidden;
 }
+
+#intro:before{
+ content:"";
+ position:absolute;inset:12px;
+ border:1px solid rgba(198,133,148,.45);
+ box-shadow:inset 0 0 35px rgba(142,25,54,.16),0 0 18px rgba(142,25,54,.12);
+ pointer-events:none;
+}
+
+#intro:after{
+ content:"✦                         ✧";
+ position:absolute;top:30px;left:0;width:100%;
+ color:#d6a8b2;font-size:19px;letter-spacing:30px;
+ opacity:.65;pointer-events:none;
+}
+
+.intro-scene{
+ position:absolute;inset:0;
+ display:flex;align-items:center;justify-content:center;
+ overflow:hidden;pointer-events:none;
+}
+
+.intro-moon{
+ position:absolute;
+ width:clamp(100px,27vw,190px);
+ height:clamp(100px,27vw,190px);
+ border-radius:50%;
+ background:radial-gradient(circle at 35% 35%,#ed8792,#b52240 65%,#681329);
+ box-shadow:0 0 35px #a51c3b,0 0 90px rgba(180,28,57,.4);
+ top:12%;right:13%;opacity:.82;
+}
+
+.intro-moon:after{
+ content:"";position:absolute;inset:12%;border-radius:50%;
+ background:radial-gradient(circle at 70% 30%,rgba(60,8,23,.3),transparent 60%);
+}
+
+.intro-castle{
+ position:absolute;width:min(100%,650px);height:62%;
+ bottom:7%;opacity:.78;
+ filter:drop-shadow(0 0 18px rgba(135,28,56,.32));
+}
+
+.intro-castle svg{width:100%;height:100%}
+
+.intro-ground{
+ position:absolute;bottom:0;left:0;width:100%;height:22%;
+ background:linear-gradient(0deg,#08060b 0%,rgba(15,8,14,.8) 45%,transparent);
+}
+
+.intro-figure{
+ position:absolute;bottom:10%;width:38px;height:105px;
+ opacity:.88;filter:drop-shadow(0 0 9px rgba(193,72,96,.5));
+}
+
+.intro-figure:before{
+ content:"";position:absolute;width:27px;height:27px;
+ border-radius:50%;top:0;left:6px;
+ background:#171019;border:1px solid #8e5363;
+}
+
+.intro-figure:after{
+ content:"";position:absolute;top:25px;left:0;
+ width:39px;height:75px;
+ background:linear-gradient(90deg,#100c14,#33202c,#100c14);
+ clip-path:polygon(25% 0,75% 0,100% 100%,0 100%);
+ border-bottom:1px solid #8e5363;
+}
+
+.intro-figure.male{left:calc(50% - 65px);transform:scale(1.12)}
+.intro-figure.female{left:calc(50% + 24px);transform:scale(.82)}
+
+.intro-content{
+ position:relative;z-index:2;display:flex;
+ flex-direction:column;align-items:center;
+ width:100%;max-width:560px;margin-top:-10px;
+}
+
 #intro h1{
  font-family:'Cormorant Garamond',serif;
- font-weight:700;
- color:#e2b8bd;
+ font-weight:700;color:#f0cbd1;
  font-size:clamp(43px,11vw,78px);
- letter-spacing:.3px;
- line-height:1;
- text-shadow:0 0 25px #d52245;
+ letter-spacing:.3px;line-height:1;
+ text-shadow:0 0 12px #9f1d3b,0 0 32px #d52245,0 3px 8px #000;
  margin:0 0 12px;
 }
+
+.intro-subtitle{
+ font-family:'Cinzel Decorative',serif;
+ font-size:9px;letter-spacing:4px;color:#d9aab4;
+ text-shadow:0 0 10px #8e2940;margin-bottom:16px;
+}
+
 #intro p{
  font-family:'Cormorant Garamond',serif;
- font-weight:600;
- font-size:18px;
- line-height:1.35;
- letter-spacing:.1px;
- color:#f0dce0;
- max-width:440px;
+ font-weight:600;font-size:18px;line-height:1.35;
+ letter-spacing:.1px;color:#f0dce0;max-width:440px;
  margin:12px 0 22px;
- text-shadow:0 0 8px #8e2940;
+ text-shadow:0 0 8px #8e2940,0 2px 5px #000;
 }
+
 .gothicButton{
- color:#f5dce0;background:linear-gradient(145deg,#39101c,#10090f);
- border:1px solid #b66d7b;padding:13px 23px;
+ position:relative;color:#f5dce0;
+ background:linear-gradient(145deg,#571629,#180a12 65%,#0c080e);
+ border:1px solid #c17b89;padding:14px 27px;
  font-family:'Cinzel Decorative',serif;
- font-size:11px;letter-spacing:1px;
- box-shadow:0 0 14px #8b1b35;
+ font-size:11px;letter-spacing:1.5px;
+ box-shadow:0 0 14px #8b1b35,inset 0 0 12px rgba(190,73,99,.2);
+ cursor:pointer;transition:transform .2s,box-shadow .2s;
 }
+
+.gothicButton:before,.gothicButton:after{
+ content:"";position:absolute;top:50%;
+ width:18px;height:1px;background:#d9aab4;
+ box-shadow:0 0 7px #d52245;
+}
+
+.gothicButton:before{right:calc(100% + 9px)}
+.gothicButton:after{left:calc(100% + 9px)}
+.gothicButton:active{transform:scale(.96);box-shadow:0 0 22px #c12748}
+
+.intro-bottom{
+ margin-top:25px;color:#b98b96;
+ font:8px 'Cinzel Decorative',serif;
+ letter-spacing:3px;text-shadow:0 0 8px #8e2940;
+}
+
 #hud{
  position:fixed;top:12px;left:12px;right:12px;
  display:flex;justify-content:space-between;gap:10px;
  color:#f0dadd;font:10px 'Cinzel Decorative',serif;
  text-shadow:0 0 8px #a91d3a;pointer-events:none;
 }
+
 #hint{
  position:fixed;top:42px;width:100%;
  text-align:center;color:#e8c9ce;
  font-family:'Cormorant Garamond',serif;
- font-weight:700;font-size:17px;
- letter-spacing:1.2px;
+ font-weight:700;font-size:17px;letter-spacing:1.2px;
  text-shadow:0 0 9px #a51e3b,0 2px 5px #000;
- pointer-events:none;
+ pointer-events:none;padding:0 12px;
 }
+
 #message{
  position:fixed;bottom:145px;left:8%;width:84%;
  text-align:center;color:#fff0f2;
  font-family:'Cormorant Garamond',serif;
- font-weight:600;
- font-size:clamp(19px,5vw,23px);
- line-height:1.3;
- letter-spacing:.3px;
- text-shadow:0 2px 9px #000;
- pointer-events:none;
+ font-weight:600;font-size:clamp(19px,5vw,23px);
+ line-height:1.3;letter-spacing:.3px;
+ text-shadow:0 2px 9px #000;pointer-events:none;
 }
+
 .control{
  position:fixed;border-radius:50%;
  border:2px solid #a77b83;
@@ -83,54 +188,50 @@ canvas{display:block}
  box-shadow:0 0 14px #8d203b,inset 0 0 14px #a52b46;
  touch-action:none;
 }
-#controls{
- bottom:20px;
- left:20px;
- width:94px;
- height:94px;
-}
+
+#controls{bottom:20px;left:20px;width:94px;height:94px}
+
 #controls:after{
  content:"✥";position:absolute;top:50%;left:50%;
  transform:translate(-50%,-50%);
- font-size:35px;color:#d7b3ba;opacity:.32;
- pointer-events:none;
+ font-size:35px;color:#d7b3ba;opacity:.32;pointer-events:none;
 }
+
 #stick{
  position:absolute;left:32px;top:32px;
  width:30px;height:30px;border-radius:50%;
  background:radial-gradient(circle,#a83c54,#3a101e);
- border:2px solid #e0b3bb;
- box-shadow:0 0 12px #d13c5b;z-index:2;
+ border:2px solid #e0b3bb;box-shadow:0 0 12px #d13c5b;z-index:2;
 }
+
 #look{
- bottom:20px;
- right:20px;
- width:94px;
- height:94px;
- display:flex;
- align-items:center;
- justify-content:center;
- color:#e6c8ce;
- font:10px 'Cinzel Decorative',serif;
- text-align:center;
+ bottom:20px;right:20px;width:94px;height:94px;
+ display:flex;align-items:center;justify-content:center;
+ color:#e6c8ce;font:10px 'Cinzel Decorative',serif;text-align:center;
 }
+
 #look span{z-index:1;pointer-events:none}
+
 #interact{
- position:fixed;
- right:35px;
- bottom:205px;
- width:54px;height:54px;
- border-radius:50%;
+ position:fixed;right:35px;bottom:205px;
+ width:54px;height:54px;border-radius:50%;
  color:#fff0f2;font-size:23px;padding:0;
  background:radial-gradient(circle,#a8324d,#260b16);
- border:2px solid #d5a0aa;
- box-shadow:0 0 16px #c12748;
+ border:2px solid #d5a0aa;box-shadow:0 0 16px #c12748;
 }
+
 #status{
  position:fixed;bottom:12px;left:0;width:100%;
  text-align:center;color:#ad9299;
- font:9px 'Cinzel Decorative',serif;
- pointer-events:none;
+ font:9px 'Cinzel Decorative',serif;pointer-events:none;
+}
+
+@media(max-height:650px){
+ .intro-moon{top:7%;right:8%;width:100px;height:100px}
+ .intro-castle{height:55%;bottom:4%}
+ .intro-figure{bottom:7%}
+ .intro-content{transform:scale(.88)}
+ .intro-bottom{margin-top:14px}
 }
 </style>
 </head>
@@ -138,9 +239,56 @@ canvas{display:block}
 <body>
 
 <div id="intro">
- <h1>THE LAST DREAM</h1>
- <p>Hay recuerdos que ni siquiera el tiempo puede borrar a menos que tengas alzheimer.</p>
- <button class="gothicButton" id="start">ENTRAR AL SUEÑO</button>
+ <div class="intro-scene">
+  <div class="intro-moon"></div>
+
+  <div class="intro-castle">
+   <svg viewBox="0 0 600 360" preserveAspectRatio="xMidYMax meet">
+    <defs>
+     <linearGradient id="castleShade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#38202e"/>
+      <stop offset="100%" stop-color="#0b080f"/>
+     </linearGradient>
+    </defs>
+    <g fill="url(#castleShade)" stroke="#69404e" stroke-width="2">
+     <rect x="105" y="155" width="390" height="205"/>
+     <rect x="220" y="95" width="160" height="265"/>
+     <rect x="70" y="125" width="75" height="235"/>
+     <rect x="455" y="125" width="75" height="235"/>
+     <path d="M70 125 L107 45 L145 125 Z"/>
+     <path d="M455 125 L492 45 L530 125 Z"/>
+     <path d="M220 95 L300 5 L380 95 Z"/>
+     <path d="M260 360 V270 Q300 215 340 270 V360 Z" fill="#100811"/>
+     <path d="M92 230 Q107 190 122 230 V280 H92 Z" fill="#8f293e"/>
+     <path d="M478 230 Q493 190 508 230 V280 H478 Z" fill="#8f293e"/>
+     <rect x="175" y="195" width="35" height="70" rx="16" fill="#a42a45" stroke="none"/>
+     <rect x="390" y="195" width="35" height="70" rx="16" fill="#a42a45" stroke="none"/>
+     <rect x="278" y="125" width="44" height="75" rx="20" fill="#b5364d" stroke="none"/>
+    </g>
+    <g fill="#d65b6d" opacity=".7">
+     <circle cx="300" cy="30" r="3"/>
+     <circle cx="108" cy="80" r="2"/>
+     <circle cx="492" cy="80" r="2"/>
+    </g>
+    <g stroke="#8f5362" stroke-width="2" fill="none" opacity=".6">
+     <path d="M40 360 Q100 300 160 360"/>
+     <path d="M440 360 Q500 300 560 360"/>
+    </g>
+   </svg>
+  </div>
+
+  <div class="intro-ground"></div>
+  <div class="intro-figure male"></div>
+  <div class="intro-figure female"></div>
+ </div>
+
+ <div class="intro-content">
+  <div class="intro-subtitle">UN SUEÑO · UN SECRETO · UN RECUERDO</div>
+  <h1>THE LAST DREAM</h1>
+  <p>Hay recuerdos que ni siquiera el tiempo puede borrar a menos que tengas alzheimer.</p>
+  <button class="gothicButton" id="start">ENTRAR AL SUEÑO</button>
+  <div class="intro-bottom">LA ROSA NEGRA · EL CASTILLO OLVIDADO</div>
+ </div>
 </div>
 
 <div id="hud">
@@ -170,9 +318,7 @@ const scene=new THREE.Scene();
 scene.background=new THREE.Color(0x17121d);
 scene.fog=new THREE.FogExp2(0x24202c,0.006);
 
-const camera=new THREE.PerspectiveCamera(
- 65,innerWidth/innerHeight,.1,300
-);
+const camera=new THREE.PerspectiveCamera(65,innerWidth/innerHeight,.1,300);
 
 const renderer=new THREE.WebGLRenderer({antialias:true});
 renderer.setSize(innerWidth,innerHeight);
@@ -220,15 +366,13 @@ for(let i=0;i<750;i++){
   -Math.random()*130-10
  );
 }
+
 const starGeo=new THREE.BufferGeometry();
-starGeo.setAttribute(
- 'position',new THREE.Float32BufferAttribute(starPositions,3)
-);
+starGeo.setAttribute('position',new THREE.Float32BufferAttribute(starPositions,3));
+
 const stars=new THREE.Points(
  starGeo,
- new THREE.PointsMaterial({
-  color:0xf0eaff,size:.3,transparent:true,opacity:.9
- })
+ new THREE.PointsMaterial({color:0xf0eaff,size:.3,transparent:true,opacity:.9})
 );
 scene.add(stars);
 
@@ -236,17 +380,17 @@ scene.add(stars);
 const clouds=[];
 for(let i=0;i<14;i++){
  const group=new THREE.Group();
+
  for(let j=0;j<8;j++){
   const puff=new THREE.Mesh(
    new THREE.SphereGeometry(2.5+Math.random()*2,12,10),
-   new THREE.MeshBasicMaterial({
-    color:0x352631,transparent:true,opacity:.67
-   })
+   new THREE.MeshBasicMaterial({color:0x352631,transparent:true,opacity:.67})
   );
   puff.position.set(j*2.5-8,Math.random()*2,0);
   puff.scale.y=.5;
   group.add(puff);
  }
+
  group.position.set(
   (Math.random()-.5)*120,
   14+Math.random()*24,
@@ -275,7 +419,7 @@ path.rotation.x=-Math.PI/2;
 path.position.set(0,.01,-35);
 scene.add(path);
 
-// CONSTRUCCIÓN DEL CASTILLO
+// CASTILLO
 const castle=new THREE.Group();
 scene.add(castle);
 
@@ -313,21 +457,25 @@ function tower(x,z,h=19){
  castle.add(lamp);
 }
 
-block(34,19,6,0,9,-48);
-block(14,26,7,0,13,-43);
-block(8,12,1,0,6,-39.2,0x171019);
+// MUROS DEL CASTILLO CON UNA ENTRADA REAL
+// El hueco central permite atravesar el muro cuando se abra la puerta.
+block(13,19,6,-10.5,9,-48);
+block(13,19,6,10.5,9,-48);
+block(34,5,6,0,16.5,-48);
+
+block(3.4,26,7,-5.3,13,-43);
+block(3.4,26,7,5.3,13,-43);
+block(14,11,7,0,20.5,-43);
 
 tower(-17,-46,20);
 tower(17,-46,20);
 tower(-11,-57,17);
 tower(11,-57,17);
 
-// ALMENAS
 for(let x=-14;x<=14;x+=4){
  block(2,2,2,x,20,-48,0x393440);
 }
 
-// VENTANAS
 for(const x of [-10,-5,5,10]){
  const win=new THREE.Mesh(
   new THREE.BoxGeometry(1.5,3.5,.25),
@@ -335,6 +483,254 @@ for(const x of [-10,-5,5,10]){
  );
  win.position.set(x,10,-44.8);
  castle.add(win);
+}
+
+// PUERTA GÓTICA INTERACTIVA
+const doorGroup=new THREE.Group();
+doorGroup.position.set(0,0,-39.15);
+scene.add(doorGroup);
+
+const doorWood=new THREE.MeshStandardMaterial({
+ color:0x160d16,roughness:.48,metalness:.22
+});
+
+const doorInset=new THREE.MeshStandardMaterial({
+ color:0x2b1421,roughness:.55,metalness:.18
+});
+
+const oldGold=new THREE.MeshStandardMaterial({
+ color:0xb18a50,roughness:.3,metalness:.8
+});
+
+const doorRed=new THREE.MeshStandardMaterial({
+ color:0x741b35,roughness:.4,metalness:.35
+});
+
+const doorLeft=new THREE.Group();
+const doorRight=new THREE.Group();
+
+doorLeft.position.set(-3.7,0,0);
+doorRight.position.set(3.7,0,0);
+doorGroup.add(doorLeft,doorRight);
+
+function doorDetail(parent,geometry,material,x,y,z){
+ const mesh=new THREE.Mesh(geometry,material);
+ mesh.position.set(x,y,z);
+ mesh.castShadow=true;
+ mesh.receiveShadow=true;
+ parent.add(mesh);
+ return mesh;
+}
+
+function makeDoorLeaf(parent,direction){
+ // Hoja principal
+ doorDetail(
+  parent,new THREE.BoxGeometry(3.68,10.5,.48),doorWood,
+  direction*1.84,5.25,0
+ );
+
+ // Paneles decorativos
+ for(let row=0;row<2;row++){
+  const y=2.9+row*4.1;
+
+  doorDetail(
+   parent,new THREE.BoxGeometry(2.85,3.45,.12),doorInset,
+   direction*1.84,y,.29
+  );
+
+  // Molduras doradas del panel
+  for(const side of [-1,1]){
+   doorDetail(
+    parent,new THREE.BoxGeometry(.045,3.25,.045),oldGold,
+    direction*1.84+side*1.37,y,.37
+   );
+  }
+
+  doorDetail(
+   parent,new THREE.BoxGeometry(2.78,.045,.045),oldGold,
+   direction*1.84,y-1.62,.37
+  );
+
+  doorDetail(
+   parent,new THREE.BoxGeometry(2.78,.045,.045),oldGold,
+   direction*1.84,y+1.62,.37
+  );
+ }
+
+ // Líneas verticales exteriores
+ for(const side of [-1,1]){
+  doorDetail(
+   parent,new THREE.BoxGeometry(.07,10.2,.07),oldGold,
+   direction*1.84+side*1.72,5.25,.34
+  );
+ }
+
+ // Motivo central de rosa
+ const roseRing=doorDetail(
+  parent,new THREE.TorusGeometry(.48,.055,10,32),
+  oldGold,direction*1.84,5.25,.43
+ );
+ roseRing.rotation.z=Math.PI/4;
+
+ doorDetail(
+  parent,new THREE.SphereGeometry(.22,20,16),
+  doorRed,direction*1.84,5.25,.43,1,1,.45
+ );
+
+ // Pequeños pétalos metálicos
+ for(let i=0;i<8;i++){
+  const angle=i*Math.PI/4;
+  const petal=doorDetail(
+   parent,new THREE.SphereGeometry(.13,12,10),
+   doorRed,
+   direction*1.84+Math.cos(angle)*.32,
+   5.25+Math.sin(angle)*.32,
+   .46
+  );
+  petal.scale.set(.8,1.5,.35);
+  petal.rotation.z=angle;
+ }
+
+ // Remaches
+ for(let y of [1,9.5]){
+  for(const side of [-1,1]){
+   doorDetail(
+    parent,new THREE.SphereGeometry(.075,10,8),
+    oldGold,direction*1.84+side*1.55,y,.4
+   );
+  }
+ }
+}
+
+// La hoja izquierda se extiende hacia el centro.
+makeDoorLeaf(doorLeft,1);
+// La hoja derecha se extiende hacia el centro.
+makeDoorLeaf(doorRight,-1);
+
+// Tiradores dorados junto al centro de la puerta
+for(const side of [-1,1]){
+ const handleX=side*1.84;
+
+ doorDetail(
+  side<0?doorLeft:doorRight,
+  new THREE.SphereGeometry(.14,16,12),
+  oldGold,
+  side<0?1.84:-1.84,5.1,.55
+ );
+
+ doorDetail(
+  side<0?doorLeft:doorRight,
+  new THREE.TorusGeometry(.16,.035,8,20),
+  oldGold,
+  side<0?1.84:-1.84,4.78,.55
+ );
+}
+
+// Marco vertical de piedra y detalles metálicos
+const frameStone=new THREE.MeshStandardMaterial({
+ color:0x51404b,roughness:.8
+});
+
+for(const side of [-1,1]){
+ const pillar=new THREE.Mesh(
+  new THREE.BoxGeometry(.65,12,.9),frameStone
+ );
+ pillar.position.set(side*4.05,6,.12);
+ pillar.castShadow=true;
+ doorGroup.add(pillar);
+
+ const goldLine=new THREE.Mesh(
+  new THREE.BoxGeometry(.09,11.5,.95),oldGold
+ );
+ goldLine.position.set(side*3.78,6,.15);
+ doorGroup.add(goldLine);
+
+ // Capitel de cada columna
+ const capital=new THREE.Mesh(
+  new THREE.BoxGeometry(1.05,.45,1.15),oldGold
+ );
+ capital.position.set(side*4.05,11.8,.12);
+ doorGroup.add(capital);
+}
+
+// Arco apuntado de estilo gótico
+const archPoints=[
+ new THREE.Vector3(-4.05,11.9,.15),
+ new THREE.Vector3(-3.75,13.1,.15),
+ new THREE.Vector3(-2.9,14.25,.15),
+ new THREE.Vector3(-1.65,15.2,.15),
+ new THREE.Vector3(0,15.8,.15),
+ new THREE.Vector3(1.65,15.2,.15),
+ new THREE.Vector3(2.9,14.25,.15),
+ new THREE.Vector3(3.75,13.1,.15),
+ new THREE.Vector3(4.05,11.9,.15)
+];
+
+const archCurve=new THREE.CatmullRomCurve3(archPoints);
+const arch=new THREE.Mesh(
+ new THREE.TubeGeometry(archCurve,60,.22,10,false),
+ oldGold
+);
+doorGroup.add(arch);
+
+// Arco interior oscuro
+const innerArchPoints=archPoints.map(p=>
+ new THREE.Vector3(p.x*.88,p.y*.88+.8,.22)
+);
+
+const innerArch=new THREE.Mesh(
+ new THREE.TubeGeometry(new THREE.CatmullRomCurve3(innerArchPoints),60,.09,8,false),
+ doorRed
+);
+doorGroup.add(innerArch);
+
+// Adorno superior del arco
+const crest=new THREE.Mesh(
+ new THREE.OctahedronGeometry(.42),
+ oldGold
+);
+crest.position.set(0,15.7,.3);
+crest.scale.set(.8,1.5,.5);
+doorGroup.add(crest);
+
+// Luces junto a la entrada
+for(const side of [-1,1]){
+ const lantern=new THREE.Group();
+ lantern.position.set(side*5.3,7.3,.2);
+ doorGroup.add(lantern);
+
+ const glow=new THREE.PointLight(0xd9475c,13,13);
+ glow.position.set(0,0,1);
+ lantern.add(glow);
+
+ const lampBody=new THREE.Mesh(
+  new THREE.BoxGeometry(.42,.65,.4),
+  new THREE.MeshStandardMaterial({
+   color:0x28131d,emissive:0x75182e,emissiveIntensity:1.2
+  })
+ );
+ lantern.add(lampBody);
+
+ const cap=new THREE.Mesh(
+  new THREE.ConeGeometry(.38,.35,4),
+  oldGold
+ );
+ cap.position.y=.48;
+ lantern.add(cap);
+}
+
+// Estado y animación de la puerta
+let doorOpen=false;
+let nearDoor=false;
+
+function animateDoor(){
+ const target=doorOpen?1.28:0;
+ doorLeft.rotation.y=THREE.MathUtils.lerp(
+  doorLeft.rotation.y,-target,.055
+ );
+ doorRight.rotation.y=THREE.MathUtils.lerp(
+  doorRight.rotation.y,target,.055
+ );
 }
 
 // ÁRBOLES
@@ -357,6 +753,7 @@ function createTree(x,z){
   leaves.position.y=5+i*2.4;
   group.add(leaves);
  }
+
  group.position.set(x,0,z);
  scene.add(group);
  trees.push(group);
@@ -401,67 +798,356 @@ function createRose(x,z){
  scene.add(group);
  roses.push(group);
 }
+
 for(let i=0;i<35;i++){
  createRose(-8-Math.random()*7,-5-Math.random()*70);
  createRose(8+Math.random()*7,-5-Math.random()*70);
 }
 
-// CONSTRUCTOR DE PERSONAJES
+// MATERIALES
+function material(color,roughness=.75,metalness=0){
+ return new THREE.MeshStandardMaterial({color,roughness,metalness});
+}
+
+const whiteMat=material(0xf4f0ed);
+const blackLeather=material(0x111016,.32,.35);
+const blackCloth=material(0x17131d);
+const hairBlack=material(0x101016,.4);
+const brownEyes=material(0x3a1c12,.25);
+const eyeWhite=material(0xf5e9df);
+const silver=material(0xb6a9b4,.25,.75);
+const blonde=material(0xd6b16e,.48);
+const blondeDark=material(0x9b7447,.5);
+const roseBlack=material(0x21121f);
+const roseLace=material(0x57404d);
+const stockingMat=material(0x100e17,.6);
+const shoeMat=material(0x08080d,.3,.25);
+
+// MAQUILLAJE SUAVE DE THE BLACK ROSE
+const softEyeliner=material(0x39232b,.8);
+const softLip=material(0x98505d,.65);
+const lipLine=material(0x713744,.7);
+const blushMat=new THREE.MeshBasicMaterial({
+ color:0xc77b83,transparent:true,opacity:.22,depthWrite:false
+});
+
+// PERSONAJES
 function createCharacter(options){
  const group=new THREE.Group();
- const skin=new THREE.MeshStandardMaterial({color:options.skin||0xd7ad99});
- const outfit=new THREE.MeshStandardMaterial({color:options.outfit||0x17151d});
- const hair=new THREE.MeshStandardMaterial({color:options.hair||0x493025});
- const detail=new THREE.MeshStandardMaterial({color:options.detail||0x29202a});
+ const female=!!options.female;
 
- function part(geo,mat,x,y,z,sx=1,sy=1,sz=1){
+ const skin=material(female?0xeac2ad:0xe6c4b2,.72);
+ const hair=female?blonde:hairBlack;
+ const hairShade=female?blondeDark:material(0x29212a);
+
+ function part(geo,mat,x,y,z,sx=1,sy=1,sz=1,parent=group){
   const m=new THREE.Mesh(geo,mat);
   m.position.set(x,y,z);
   m.scale.set(sx,sy,sz);
   m.castShadow=true;
-  group.add(m);
+  m.receiveShadow=true;
+  parent.add(m);
   return m;
  }
 
- // CUERPO Y CHAQUETA
- part(new THREE.BoxGeometry(.85,1.25,.46),outfit,0,1.62,0);
- part(new THREE.BoxGeometry(.88,.16,.5),detail,0,2.15,0);
+ // PIERNAS
+ const legs=[];
+ const legMat=female?stockingMat:blackCloth;
 
- // CUELLO Y CABEZA
- part(new THREE.CylinderGeometry(.13,.14,.25,12),skin,0,2.36,0);
- part(new THREE.SphereGeometry(.37,24,20),skin,0,2.72,0);
+ for(const side of [-1,1]){
+  const leg=part(
+   new THREE.CapsuleGeometry(female?.13:.19,.72,6,12),
+   legMat,side*(female?.19:.23),.68,0,
+   1,female?1:1.08,1
+  );
+  legs.push(leg);
 
- // CABELLO
- part(new THREE.SphereGeometry(.4,20,16),hair,0,2.91,-.06,.99,.78,1.05);
- part(new THREE.BoxGeometry(.72,.18,.25),hair,0,2.65,.27);
+  if(female){
+   part(new THREE.BoxGeometry(.34,.16,.48),shoeMat,side*.19,.13,.09);
+   part(new THREE.BoxGeometry(.34,.055,.48),silver,side*.19,.19,.09);
+   part(new THREE.BoxGeometry(.25,.045,.045),shoeMat,side*.19,.23,.25);
+  }else{
+   part(new THREE.BoxGeometry(.39,.2,.53),blackLeather,side*.23,.12,.08);
+   part(new THREE.BoxGeometry(.4,.055,.54),blackCloth,side*.23,.055,.08);
 
- if(options.female){
-  for(const side of [-1,1]){
-   part(new THREE.BoxGeometry(.2,.78,.24),hair,side*.34,2.48,-.02);
-   part(new THREE.BoxGeometry(.21,.22,.25),detail,side*.34,2.12,-.02);
+   part(
+    new THREE.CylinderGeometry(.19,.17,.42,12),
+    blackCloth,side*.23,1.04,0,1.08,1,1.1
+   );
   }
-  part(new THREE.BoxGeometry(.7,.13,.18),hair,0,2.92,.29);
-  part(new THREE.BoxGeometry(.91,.68,.5),outfit,0,1.65,0);
-  part(new THREE.BoxGeometry(.95,.12,.53),detail,0,1.27,0);
- }else{
-  part(new THREE.BoxGeometry(.12,.8,.07),detail,-.16,1.65,.25);
-  part(new THREE.BoxGeometry(.12,.8,.07),detail,.16,1.65,.25);
  }
 
- // BRAZOS
+ // CUERPO
+ if(!female){
+  part(new THREE.CapsuleGeometry(.34,.54,6,12),whiteMat,0,1.83,0,1,1.1,.82);
+
+  const jacketLeft=part(
+   new THREE.BoxGeometry(.43,1.02,.16),blackLeather,-.22,1.82,.16
+  );
+  jacketLeft.rotation.z=.025;
+
+  const jacketRight=part(
+   new THREE.BoxGeometry(.43,1.02,.16),blackLeather,.22,1.82,.16
+  );
+  jacketRight.rotation.z=-.025;
+
+  const lapel1=part(new THREE.BoxGeometry(.18,.49,.045),blackLeather,-.16,2.08,.27);
+  lapel1.rotation.z=-.28;
+  const lapel2=part(new THREE.BoxGeometry(.18,.49,.045),blackLeather,.16,2.08,.27);
+  lapel2.rotation.z=.28;
+
+  part(new THREE.BoxGeometry(.018,.78,.018),silver,0,1.77,.255);
+  part(new THREE.BoxGeometry(.15,.025,.025),silver,-.29,1.55,.25);
+  part(new THREE.BoxGeometry(.15,.025,.025),silver,.29,1.55,.25);
+
+  part(new THREE.CylinderGeometry(.15,.15,.13,20),whiteMat,0,2.34,0);
+
+  const chain=part(new THREE.TorusGeometry(.13,.009,6,28),silver,0,2.16,.25);
+  chain.rotation.x=Math.PI/2;
+  part(new THREE.OctahedronGeometry(.045),silver,0,2.01,.27,.7,1.3,.7);
+
+ }else{
+  part(new THREE.CylinderGeometry(.25,.62,.78,16),blackCloth,0,1.47,0);
+  part(new THREE.CylinderGeometry(.61,.64,.07,20),roseLace,0,1.12,0);
+
+  part(new THREE.BoxGeometry(.62,.68,.39),blackLeather,0,1.91,.015);
+  part(new THREE.BoxGeometry(.48,.58,.035),roseBlack,0,1.92,.22);
+
+  for(const x of [-.22,.22]){
+   part(new THREE.BoxGeometry(.018,.57,.025),silver,x,1.91,.25);
+  }
+
+  for(let i=0;i<5;i++){
+   part(new THREE.BoxGeometry(.34,.018,.025),roseLace,0,2.12-i*.105,.255);
+  }
+
+  part(new THREE.BoxGeometry(.34,.09,.035),roseLace,0,2.29,.2);
+  part(new THREE.OctahedronGeometry(.07),silver,0,2.2,.27,.8,1.1,.8);
+ }
+
+ // CUELLO
+ part(new THREE.CylinderGeometry(.12,.14,.25,16),skin,0,2.42,0);
+
+ // CABEZA
+ part(new THREE.SphereGeometry(.34,32,28),skin,0,2.76,.015,.91,1.12,.88);
+
+ // OREJAS
+ for(const side of [-1,1]){
+  part(new THREE.SphereGeometry(.075,16,12),skin,side*.33,2.75,0,.7,1,.65);
+ }
+
+ // OJOS Y CEJAS
+ for(const side of [-1,1]){
+  part(
+   new THREE.SphereGeometry(female?.105:.085,20,16),
+   eyeWhite,side*(female?.145:.14),2.79,.30,
+   1,female?1.18:1,.42
+  );
+
+  part(
+   new THREE.SphereGeometry(female?.065:.052,18,14),
+   brownEyes,side*(female?.145:.14),2.79,.335,
+   1,female?1.16:1,.38
+  );
+
+  part(
+   new THREE.SphereGeometry(.022,12,10),
+   eyeWhite,side*(female?.13:.13)-.012,2.81,.35
+  );
+
+  const brow=part(
+   new THREE.BoxGeometry(.16,.035,.045),
+   hair,side*.14,2.94,.30
+  );
+  brow.rotation.z=female?-side*.015:side*.08;
+
+  if(female){
+   const liner=part(
+    new THREE.BoxGeometry(.19,.012,.018),
+    softEyeliner,side*.145,2.865,.345
+   );
+   liner.rotation.z=-side*.035;
+
+   const wing=part(
+    new THREE.BoxGeometry(.045,.012,.016),
+    softEyeliner,side*.245,2.875,.337
+   );
+   wing.rotation.z=side*.25;
+
+   part(
+    new THREE.SphereGeometry(.09,16,12),
+    blushMat,side*.235,2.665,.29,.95,.35,.18
+   );
+  }
+ }
+
+ // NARIZ Y BOCA
+ part(new THREE.SphereGeometry(.045,12,10),skin,0,2.68,.34,.7,1.3,.7);
+
+ if(female){
+  part(
+   new THREE.SphereGeometry(.075,18,12),
+   softLip,0,2.565,.325,.95,.34,.3
+  );
+  part(new THREE.BoxGeometry(.105,.008,.012),lipLine,0,2.57,.35);
+ }else{
+  part(new THREE.BoxGeometry(.11,.018,.025),material(0x86565a),0,2.57,.315);
+ }
+
+ // CABELLO BASE Y NUCA
+ part(new THREE.SphereGeometry(.39,28,22),hair,0,2.98,-.035,1.04,.82,1.08);
+ part(new THREE.BoxGeometry(.66,.36,.48),hair,0,2.73,-.23);
+
+ for(const side of [-1,1]){
+  const lock1=part(new THREE.CapsuleGeometry(.095,.48,5,10),hair,side*.31,2.65,-.04);
+  lock1.rotation.z=-side*.12;
+
+  const lock2=part(new THREE.CapsuleGeometry(.075,.35,5,10),hairShade,side*.37,2.45,-.03);
+  lock2.rotation.z=-side*.2;
+
+  const lock3=part(new THREE.CapsuleGeometry(.065,.25,5,10),hair,side*.27,2.39,-.08);
+  lock3.rotation.z=side*.18;
+ }
+
+ if(!female){
+  // CABELLO NEGRO TIPO LIBRITO
+  const fringeLeft=part(new THREE.CapsuleGeometry(.085,.31,5,10),hair,-.12,2.94,.29);
+  fringeLeft.rotation.z=-.27;
+
+  const fringeRight=part(new THREE.CapsuleGeometry(.085,.31,5,10),hair,.12,2.94,.29);
+  fringeRight.rotation.z=.27;
+
+  const front1=part(new THREE.CapsuleGeometry(.055,.28,5,10),hair,-.23,2.79,.28);
+  front1.rotation.z=-.28;
+
+  const front2=part(new THREE.CapsuleGeometry(.055,.28,5,10),hair,.23,2.79,.28);
+  front2.rotation.z=.28;
+
+  // LENTES RECTANGULARES DORADOS
+  const glasses=new THREE.Group();
+  const frameMat=material(0xc49b54,.25,.8);
+
+  for(const side of [-1,1]){
+   const frame=new THREE.Mesh(
+    new THREE.BoxGeometry(.19,.125,.018),frameMat
+   );
+   frame.position.set(side*.14,2.79,.365);
+   glasses.add(frame);
+
+   const lens=new THREE.Mesh(
+    new THREE.PlaneGeometry(.155,.09),
+    new THREE.MeshPhysicalMaterial({
+     color:0xe8e1dc,transparent:true,opacity:.16,roughness:.12
+    })
+   );
+   lens.position.set(side*.14,2.79,.374);
+   glasses.add(lens);
+
+   const temple=new THREE.Mesh(
+    new THREE.BoxGeometry(.018,.018,.28),frameMat
+   );
+   temple.position.set(side*.24,2.79,.22);
+   glasses.add(temple);
+  }
+
+  const bridge=new THREE.Mesh(new THREE.BoxGeometry(.09,.018,.018),frameMat);
+  bridge.position.set(0,2.79,.37);
+  glasses.add(bridge);
+  group.add(glasses);
+
+ }else{
+  // CERQUILLO RUBIO ELEVADO
+  const fringeLeft=part(
+   new THREE.CapsuleGeometry(.075,.20,5,10),hair,-.13,3.09,.29
+  );
+  fringeLeft.rotation.z=-.20;
+
+  const fringeRight=part(
+   new THREE.CapsuleGeometry(.075,.20,5,10),hair,.13,3.09,.29
+  );
+  fringeRight.rotation.z=.20;
+
+  for(const side of [-1,1]){
+   const curl=part(
+    new THREE.CapsuleGeometry(.075,.28,5,10),
+    hairShade,side*.4,2.57,-.04
+   );
+   curl.rotation.z=-side*.32;
+  }
+
+  // LENTES CIRCULARES DORADOS
+  const glasses=new THREE.Group();
+  const frameMat=material(0xc49b54,.25,.8);
+
+  for(const side of [-1,1]){
+   const frame=new THREE.Mesh(
+    new THREE.TorusGeometry(.095,.012,10,32),frameMat
+   );
+   frame.position.set(side*.14,2.79,.365);
+   glasses.add(frame);
+
+   const lens=new THREE.Mesh(
+    new THREE.PlaneGeometry(.15,.15),
+    new THREE.MeshPhysicalMaterial({
+     color:0xe8e1dc,transparent:true,opacity:.14,roughness:.12
+    })
+   );
+   lens.position.set(side*.14,2.79,.35);
+   glasses.add(lens);
+
+   const temple=new THREE.Mesh(
+    new THREE.BoxGeometry(.015,.015,.27),frameMat
+   );
+   temple.position.set(side*.23,2.79,.21);
+   glasses.add(temple);
+  }
+
+  const bridge=new THREE.Mesh(new THREE.BoxGeometry(.08,.015,.015),frameMat);
+  bridge.position.set(0,2.79,.37);
+  glasses.add(bridge);
+  group.add(glasses);
+ }
+
+ // BRAZOS Y MANGAS
  const arms=[];
  for(const side of [-1,1]){
-  const arm=part(new THREE.BoxGeometry(.24,.85,.27),outfit,side*.57,1.65,0);
+  const arm=part(
+   new THREE.CapsuleGeometry(.115,.66,6,12),
+   female?blackCloth:blackLeather,side*.53,1.75,0
+  );
   arms.push(arm);
-  part(new THREE.SphereGeometry(.14,12,10),skin,side*.57,1.19,0);
+
+  if(female){
+   const sleeve=part(
+    new THREE.ConeGeometry(.32,.78,12),
+    blackCloth,side*.57,1.73,.015
+   );
+   sleeve.rotation.z=side*.72;
+   sleeve.rotation.x=.08;
+
+   const cuff=part(
+    new THREE.TorusGeometry(.22,.035,8,16),
+    roseLace,side*.78,1.37,.04
+   );
+   cuff.rotation.x=Math.PI/2;
+
+   part(new THREE.SphereGeometry(.105,16,12),skin,side*.57,1.28,.02);
+  }else{
+   part(new THREE.SphereGeometry(.11,16,12),skin,side*.53,1.28,.02);
+   part(new THREE.BoxGeometry(.24,.09,.28),blackLeather,side*.53,1.35,.01);
+  }
  }
 
- // PIERNAS Y BOTAS
- const legs=[];
- for(const side of [-1,1]){
-  const leg=part(new THREE.BoxGeometry(.3,.9,.35),outfit,side*.23,.48,0);
-  legs.push(leg);
-  part(new THREE.BoxGeometry(.34,.2,.48),detail,side*.23,.12,.06);
+ // ACCESORIOS DE THE BLACK ROSE
+ if(female){
+  const choker=part(new THREE.TorusGeometry(.14,.025,8,24),blackLeather,0,2.39,.03);
+  choker.rotation.x=Math.PI/2;
+
+  for(const side of [-1,1]){
+   part(new THREE.SphereGeometry(.035,12,10),silver,side*.36,2.65,.02);
+   part(new THREE.OctahedronGeometry(.055),silver,side*.36,2.55,.02);
+   part(new THREE.SphereGeometry(.07,12,10),roseLace,side*.29,1.25,.05);
+  }
  }
 
  group.userData.arms=arms;
@@ -470,23 +1156,14 @@ function createCharacter(options){
 }
 
 // PROTAGONISTA
-const player=createCharacter({
- hair:0x503529,
- skin:0xd5a58f,
- outfit:0x17151c,
- detail:0x39303b
-});
+const player=createCharacter({female:false});
+player.scale.setScalar(1);
 scene.add(player);
 player.position.set(0,0,8);
 
 // THE BLACK ROSE
-const blackRose=createCharacter({
- female:true,
- hair:0xd6b16e,
- skin:0xe2b9a6,
- outfit:0x17131b,
- detail:0x30212e
-});
+const blackRose=createCharacter({female:true});
+blackRose.scale.setScalar(1.48/1.80);
 blackRose.position.set(5,0,-33);
 blackRose.rotation.y=-.5;
 scene.add(blackRose);
@@ -504,9 +1181,7 @@ let cameraHeight=2.1;
 
 function updateCamera(){
  const target=new THREE.Vector3(
-  player.position.x,
-  player.position.y+1.65,
-  player.position.z
+  player.position.x,player.position.y+1.65,player.position.z
  );
 
  const horizontal=Math.cos(verticalAngle)*cameraDistance;
@@ -531,24 +1206,30 @@ pad.addEventListener('pointerdown',e=>{
  pad.setPointerCapture(e.pointerId);
  moveJoystick(e);
 });
+
 pad.addEventListener('pointermove',e=>{
  if(joystickActive)moveJoystick(e);
 });
+
 function moveJoystick(e){
  const rect=pad.getBoundingClientRect();
  let x=e.clientX-(rect.left+rect.width/2);
  let y=e.clientY-(rect.top+rect.height/2);
  const length=Math.hypot(x,y);
+
  if(length>30){x=x/length*30;y=y/length*30}
+
  moveX=x/30;
  moveY=y/30;
  stick.style.transform=`translate(${x}px,${y}px)`;
 }
+
 function releaseJoystick(){
  joystickActive=false;
  moveX=0;moveY=0;
  stick.style.transform='translate(0,0)';
 }
+
 pad.addEventListener('pointerup',releaseJoystick);
 pad.addEventListener('pointercancel',releaseJoystick);
 
@@ -562,6 +1243,7 @@ look.addEventListener('pointerdown',e=>{
  lastLookY=e.clientY;
  look.setPointerCapture(e.pointerId);
 });
+
 look.addEventListener('pointermove',e=>{
  if(!looking)return;
 
@@ -570,14 +1252,12 @@ look.addEventListener('pointermove',e=>{
 
  cameraAngle-=dx*.009;
  verticalAngle-=dy*.009;
-
- verticalAngle=THREE.MathUtils.clamp(
-  verticalAngle,-.35,.95
- );
+ verticalAngle=THREE.MathUtils.clamp(verticalAngle,-.35,.95);
 
  lastLookX=e.clientX;
  lastLookY=e.clientY;
 });
+
 look.addEventListener('pointerup',()=>looking=false);
 look.addEventListener('pointercancel',()=>looking=false);
 
@@ -592,6 +1272,7 @@ let nearRose=false;
 let storyStep=0;
 
 const message=document.getElementById('message');
+const hint=document.getElementById('hint');
 
 document.getElementById('start').addEventListener('click',()=>{
  started=true;
@@ -604,11 +1285,28 @@ document.getElementById('start').addEventListener('click',()=>{
 document.getElementById('interact').addEventListener('click',()=>{
  if(!started)return;
 
- if(nearRose){
-  message.textContent='The Black Rose te observa. «Pensé que habías olvidado el camino hacia mí».';
- }else if(storyStep===1){
+ // PRIMERO SE COMPLETAN LAS DOS FRASES DE INTRODUCCIÓN
+ if(storyStep===1){
   message.textContent='No sabes cómo llegaste (pq no usaste Maps, jaa)';
   storyStep=2;
+  return;
+ }
+
+ // ABRIR LA PUERTA CUANDO EL JUGADOR ESTÁ CERCA
+ if(nearDoor && !doorOpen){
+  doorOpen=true;
+  message.textContent='Las puertas antiguas se abren lentamente... El castillo te da la bienvenida.';
+  return;
+ }
+
+ if(nearDoor && doorOpen){
+  message.textContent='La entrada está abierta. El castillo guarda muchos secretos.';
+  return;
+ }
+
+ // ENCUENTRO CON THE BLACK ROSE
+ if(nearRose){
+  message.textContent='The Black Rose te observa. «Pensé que habías olvidado el camino hacia mí».';
  }
 });
 
@@ -634,6 +1332,7 @@ function animate(){
 
  blackRose.position.y=Math.sin(t*1.5)*.035;
 
+ // MOVIMIENTO Y COLISIONES
  if(started){
   let forward=moveY;
   let sideways=moveX;
@@ -667,12 +1366,31 @@ function animate(){
   player.position.x=THREE.MathUtils.clamp(player.position.x,-45,45);
   player.position.z=THREE.MathUtils.clamp(player.position.z,-100,18);
 
+  // IMPIDE ATRAVESAR LA PUERTA SI TODAVÍA ESTÁ CERRADA
+  if(!doorOpen && Math.abs(player.position.x)<3.9 && player.position.z<-34.5){
+   player.position.z=-34.5;
+  }
+
+  // DETECTAR PROXIMIDAD A LA PUERTA Y A THE BLACK ROSE
+  const doorDistance=Math.hypot(
+   player.position.x,
+   player.position.z+39.15
+  );
+
+  nearDoor=doorDistance<5.4 && Math.abs(player.position.x)<6.2;
   nearRose=player.position.distanceTo(blackRose.position)<5;
 
-  if(nearRose){
-   document.getElementById('hint').textContent='Hay alguien junto a las rosas...';
+  // MENSAJES DE EXPLORACIÓN
+  if(nearDoor && !doorOpen){
+   hint.textContent='La entrada está cerrada... toca ✧ para abrirla';
+  }else if(nearDoor && doorOpen){
+   hint.textContent='La puerta está abierta. Entra al castillo';
+  }else if(nearRose){
+   hint.textContent='Hay alguien junto a las rosas...';
+  }else if(doorOpen && player.position.z<-41){
+   hint.textContent='El castillo guarda secretos en su interior...';
   }else{
-   document.getElementById('hint').textContent='Explora El Castillo Papita Vagoneta';
+   hint.textContent='Explora El Castillo Papita Vagoneta';
   }
 
   updateCamera();
@@ -681,8 +1399,12 @@ function animate(){
   camera.lookAt(0,9,-43);
  }
 
+ // MOVIMIENTO SUAVE DE LAS DOS HOJAS
+ animateDoor();
+
  renderer.render(scene,camera);
 }
+
 animate();
 
 // CAMBIO DE TAMAÑO
