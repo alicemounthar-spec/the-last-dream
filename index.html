@@ -1,812 +1,1304 @@
+<!DOCTYPE html>  <html lang="es">  
+<head>  
+<meta charset="UTF-8">  
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">  
+<title>THE LAST DREAM</title>  
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=IM+Fell+English&family=UnifrakturCook:wght@700&family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet">  <style>  
+*{box-sizing:border-box}  
+body{margin:0;overflow:hidden;background:#08070c;color:#eee;font-family:'IM Fell English',serif;touch-action:none}  
+canvas{display:block}  
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<title>THE LAST DREAM</title>
+#intro{  
+position:fixed;inset:0;z-index:10;display:flex;flex-direction:column;  
+justify-content:center;align-items:center;  
+background:linear-gradient(180deg,rgba(8,5,12,.30),rgba(8,5,12,.78)),radial-gradient(circle at 50% 35%,rgba(105,18,43,.18),rgba(5,4,8,.72));  
+text-align:center;padding:25px;overflow:hidden  
+}  
+#intro:before{  
+content:"";position:absolute;inset:12px;border:1px solid rgba(198,133,148,.45);  
+box-shadow:inset 0 0 35px rgba(142,25,54,.16),0 0 18px rgba(142,25,54,.12);  
+pointer-events:none  
+}  
+#intro:after{  
+content:"✦                         ✧";position:absolute;top:30px;left:0;width:100%;  
+color:#d6a8b2;font-size:19px;letter-spacing:30px;opacity:.65;pointer-events:none  
+}  
+.intro-scene{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden;pointer-events:none}  
+.intro-moon{  
+position:absolute;width:clamp(100px,27vw,190px);height:clamp(100px,27vw,190px);  
+border-radius:50%;background:radial-gradient(circle at 35% 35%,#ed8792,#b52240 65%,#681329);  
+box-shadow:0 0 35px #a51c3b,0 0 90px rgba(180,28,57,.4);  
+top:12%;right:13%;opacity:.82  
+}  
+.intro-moon:after{  
+content:"";position:absolute;inset:12%;border-radius:50%;  
+background:radial-gradient(circle at 70% 30%,rgba(60,8,23,.3),transparent 60%)  
+}  
+.intro-castle{  
+position:absolute;width:min(100%,650px);height:62%;bottom:7%;  
+opacity:.78;filter:drop-shadow(0 0 18px rgba(135,28,56,.32))  
+}  
+.intro-castle svg{width:100%;height:100%}  
+.intro-ground{  
+position:absolute;bottom:0;left:0;width:100%;height:22%;  
+background:linear-gradient(0deg,#08060b 0%,rgba(15,8,14,.8) 45%,transparent)  
+}  
+.intro-figure{  
+position:absolute;bottom:10%;width:38px;height:105px;opacity:.88;  
+filter:drop-shadow(0 0 9px rgba(193,72,96,.5))  
+}  
+.intro-figure:before{  
+content:"";position:absolute;width:27px;height:27px;border-radius:50%;  
+top:0;left:6px;background:#171019;border:1px solid #8e5363  
+}  
+.intro-figure:after{  
+content:"";position:absolute;top:25px;left:0;width:39px;height:75px;  
+background:linear-gradient(90deg,#100c14,#33202c,#100c14);  
+clip-path:polygon(25% 0,75% 0,100% 100%,0 100%);  
+border-bottom:1px solid #8e5363  
+}  
+.intro-figure.male{left:calc(50% - 65px);transform:scale(1.12)}  
+.intro-figure.female{left:calc(50% + 24px);transform:scale(.82)}  
+.intro-content{  
+position:relative;z-index:2;display:flex;flex-direction:column;  
+align-items:center;width:100%;max-width:560px;margin-top:-10px  
+}  
+#intro h1{  
+font-family:'Cormorant Garamond',serif;font-weight:700;color:#f0cbd1;  
+font-size:clamp(43px,11vw,78px);letter-spacing:.3px;line-height:1;  
+text-shadow:0 0 12px #9f1d3b,0 0 32px #d52245,0 3px 8px #000;  
+margin:0 0 12px  
+}  
+.intro-subtitle{  
+font-family:'Cinzel Decorative',serif;font-size:9px;letter-spacing:4px;  
+color:#d9aab4;text-shadow:0 0 10px #8e2940;margin-bottom:16px  
+}  
+#intro p{  
+font-family:'Cormorant Garamond',serif;font-weight:600;font-size:18px;  
+line-height:1.35;letter-spacing:.1px;color:#f0dce0;max-width:440px;  
+margin:12px 0 22px;text-shadow:0 0 8px #8e2940,0 2px 5px #000  
+}  
+.gothicButton{  
+position:relative;color:#f5dce0;  
+background:linear-gradient(145deg,#571629,#180a12 65%,#0c080e);  
+border:1px solid #c17b89;padding:14px 27px;  
+font-family:'Cinzel Decorative',serif;font-size:11px;letter-spacing:1.5px;  
+box-shadow:0 0 14px #8b1b35,inset 0 0 12px rgba(190,73,99,.2);  
+cursor:pointer;transition:transform .2s,box-shadow .2s  
+}  
+.gothicButton:before,.gothicButton:after{  
+content:"";position:absolute;top:50%;width:18px;height:1px;  
+background:#d9aab4;box-shadow:0 0 7px #d52245  
+}  
+.gothicButton:before{right:calc(100% + 9px)}  
+.gothicButton:after{left:calc(100% + 9px)}  
+.gothicButton:active{transform:scale(.96);box-shadow:0 0 22px #c12748}  
+.intro-bottom{  
+margin-top:25px;color:#b98b96;font:8px 'Cinzel Decorative',serif;  
+letter-spacing:3px;text-shadow:0 0 8px #8e2940  
+}  
+#hud{  
+position:fixed;top:12px;left:12px;right:12px;display:flex;  
+justify-content:space-between;gap:10px;color:#f0dadd;  
+font:10px 'Cinzel Decorative',serif;text-shadow:0 0 8px #a91d3a;  
+pointer-events:none  
+}  
+#hint{  
+position:fixed;top:42px;width:100%;text-align:center;color:#e8c9ce;  
+font-family:'Cormorant Garamond',serif;font-weight:700;font-size:17px;  
+letter-spacing:1.2px;text-shadow:0 0 9px #a51e3b,0 2px 5px #000;  
+pointer-events:none;padding:0 12px  
+}  
+#message{  
+position:fixed;bottom:145px;left:7%;width:86%;text-align:center;  
+color:#713f56;font-family:'Cormorant Garamond',serif;font-weight:700;  
+font-size:clamp(19px,5vw,23px);line-height:1.4;letter-spacing:.3px;  
+text-shadow:0 1px 1px rgba(255,255,255,.8);  
+background:linear-gradient(135deg,rgba(255,239,246,.94),rgba(248,216,231,.92));  
+border:1px solid rgba(204,151,176,.85);border-radius:18px;padding:13px 17px;  
+box-shadow:0 4px 18px rgba(155,91,119,.2),inset 0 0 12px rgba(255,255,255,.8);  
+pointer-events:none  
+}  
 
-<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=IM+Fell+English&family=UnifrakturCook:wght@700&family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet">
+/* CONTROLES COQUETTE ROSA Y PERLADO */  
+.control{  
+position:fixed;border-radius:50%;border:2px solid #f9e2ed;  
+background:  
+radial-gradient(circle at 30% 25%,rgba(255,255,255,1),transparent 27%),  
+radial-gradient(circle at 68% 75%,rgba(255,238,247,.65),transparent 35%),  
+linear-gradient(145deg,#f9d5e6 0%,#edb5d0 48%,#d995b8 100%);  
+box-shadow:0 0 13px rgba(255,211,233,.9),0 0 27px rgba(220,143,184,.55),  
+inset 0 0 13px rgba(255,255,255,.95),inset 0 -5px 12px rgba(177,102,143,.2);  
+touch-action:none  
+}  
+#controls{bottom:20px;left:20px;width:94px;height:94px}  
+#controls:after{  
+content:"✥";position:absolute;top:50%;left:50%;  
+transform:translate(-50%,-50%);font-size:35px;color:#fffaff;  
+opacity:.8;pointer-events:none;text-shadow:0 0 5px #bd789b,0 0 12px #fff  
+}  
+#controls:before{  
+content:"✧";position:absolute;top:9px;right:13px;  
+color:#fff;font-size:13px;pointer-events:none;  
+text-shadow:0 0 7px #fff,0 0 10px #c77da3  
+}  
+#stick{  
+position:absolute;left:32px;top:32px;width:30px;height:30px;border-radius:50%;  
+background:radial-gradient(circle at 32% 25%,#fff 0%,#fff4fa 25%,transparent 50%),  
+linear-gradient(145deg,#fce7f1,#e8b1ce 65%,#d48eaf);  
+border:2px solid #fff9fc;  
+box-shadow:0 0 12px rgba(255,255,255,.95),0 0 16px rgba(220,145,183,.65),inset 0 0 7px #fff;  
+z-index:2  
+}  
+#look{  
+bottom:20px;right:20px;width:94px;height:94px;  
+display:flex;align-items:center;justify-content:center;color:#75405f;  
+font:10px 'Cinzel Decorative',serif;font-weight:700;text-align:center;  
+text-shadow:0 1px 0 #fff,0 0 5px rgba(255,255,255,.95)  
+}  
+#look span{  
+z-index:2;pointer-events:none;background:rgba(255,246,251,.36);  
+border:1px solid rgba(255,255,255,.48);border-radius:10px;padding:6px 5px;  
+box-shadow:0 0 8px rgba(255,255,255,.45)  
+}  
+#look:after{  
+content:"✧";position:absolute;top:12px;right:17px;color:#fff;  
+font-size:16px;pointer-events:none;text-shadow:0 0 5px #fff,0 0 12px #b96f96  
+}  
+#look:before{  
+content:"·";position:absolute;bottom:13px;left:19px;color:#fff;  
+font-size:25px;pointer-events:none;text-shadow:0 0 8px #fff  
+}  
 
-<style>
-*{box-sizing:border-box}
-
-body{
- margin:0;overflow:hidden;background:#08070c;color:#eee;
- font-family:'IM Fell English',serif;touch-action:none;
+/* ESTRELLA DE INTERACCIÓN */  
+#interact{  
+position:fixed;right:17px;bottom:265px;width:54px;height:54px;  
+border-radius:50%;color:#fffaff;font-size:25px;padding:0;  
+background:radial-gradient(circle at 35% 30%,#fff,#f9ddeb 48%,#dfa9c6 78%,#c98eae);  
+border:2px solid #fff5fa;  
+box-shadow:0 0 15px rgba(255,235,246,.95),0 0 28px rgba(232,166,201,.65),inset 0 0 10px #fff;  
+text-shadow:0 0 8px #c987aa  
+}  
+#interact:active{transform:scale(.93);filter:brightness(1.12)}  
+#status{  
+position:fixed;bottom:12px;left:0;width:100%;text-align:center;  
+color:#ad9299;font:9px 'Cinzel Decorative',serif;pointer-events:none  
+}  
+@media(max-height:650px){  
+.intro-moon{top:7%;right:8%;width:100px;height:100px}  
+.intro-castle{height:55%;bottom:4%}  
+.intro-figure{bottom:7%}  
+.intro-content{transform:scale(.88)}  
+.intro-bottom{margin-top:14px}  
+#interact{bottom:225px;right:14px}  
+}  
+#questPanel{
+ position:fixed;top:72px;left:12px;z-index:5;width:min(270px,66vw);
+ padding:12px 14px;border:1px solid rgba(232,190,211,.75);border-radius:13px;
+ background:linear-gradient(145deg,rgba(35,20,34,.88),rgba(12,9,17,.82));
+ color:#f6e4ed;box-shadow:0 0 18px rgba(208,142,178,.2);
+ font-family:'Cormorant Garamond',serif;pointer-events:none
 }
-
-canvas{display:block}
-
-/* PORTADA DEL JUEGO */
-#intro{
- position:fixed;inset:0;z-index:10;
- display:flex;flex-direction:column;
- justify-content:center;align-items:center;
- background:
-  linear-gradient(180deg,rgba(8,5,12,.30),rgba(8,5,12,.78)),
-  radial-gradient(circle at 50% 35%,rgba(105,18,43,.18),rgba(5,4,8,.72));
- text-align:center;padding:25px;
- overflow:hidden;
+#questTitle{font:9px 'Cinzel Decorative',serif;letter-spacing:1.5px;color:#e8bfd0;margin-bottom:6px}
+#questText{font-size:15px;line-height:1.25}
+#questProgress{font-size:12px;color:#d7b4c5;margin-top:6px}
+#inventoryButton{
+ position:fixed;z-index:8;top:68px;right:12px;border:1px solid #f7dce9;
+ border-radius:12px;padding:9px 12px;color:#6f3c59;
+ background:linear-gradient(145deg,#fff5fa,#eac1d8);
+ box-shadow:0 0 14px rgba(235,190,216,.5);
+ font:9px 'Cinzel Decorative',serif
 }
-
-#intro:before{
- content:"";
- position:absolute;inset:12px;
- border:1px solid rgba(198,133,148,.45);
- box-shadow:inset 0 0 35px rgba(142,25,54,.16),0 0 18px rgba(142,25,54,.12);
- pointer-events:none;
+#inventoryPanel{
+ display:none;position:fixed;z-index:12;top:112px;right:12px;width:min(250px,76vw);
+ max-height:45vh;overflow:auto;padding:14px;border-radius:14px;
+ border:1px solid #e9bfd2;background:rgba(28,17,29,.96);
+ color:#f5e5ed;box-shadow:0 0 24px rgba(0,0,0,.45);
+ font-family:'Cormorant Garamond',serif
 }
-
-#intro:after{
- content:"✦                         ✧";
- position:absolute;top:30px;left:0;width:100%;
- color:#d6a8b2;font-size:19px;letter-spacing:30px;
- opacity:.65;pointer-events:none;
+#inventoryPanel h3{font:10px 'Cinzel Decorative',serif;color:#efc9d9;margin:0 0 10px}
+#inventoryList{font-size:15px;line-height:1.6}
+.inventoryItem{border-bottom:1px solid rgba(239,201,217,.18);padding:4px 0}
+#inventoryClose{
+ margin-top:10px;padding:7px 12px;border:1px solid #d6a5bd;border-radius:8px;
+ background:#4b293e;color:#f8e9f0;font:9px 'Cinzel Decorative',serif
 }
-
-.intro-scene{
- position:absolute;inset:0;
- display:flex;align-items:center;justify-content:center;
- overflow:hidden;pointer-events:none;
+#riddleModal{
+ display:none;position:fixed;inset:0;z-index:20;align-items:center;justify-content:center;
+ padding:22px;background:rgba(7,4,10,.76);backdrop-filter:blur(5px)
 }
-
-.intro-moon{
- position:absolute;
- width:clamp(100px,27vw,190px);
- height:clamp(100px,27vw,190px);
- border-radius:50%;
- background:radial-gradient(circle at 35% 35%,#ed8792,#b52240 65%,#681329);
- box-shadow:0 0 35px #a51c3b,0 0 90px rgba(180,28,57,.4);
- top:12%;right:13%;opacity:.82;
+#riddleCard{
+ width:min(420px,100%);padding:24px 20px;border:1px solid #d9afc4;border-radius:17px;
+ background:linear-gradient(145deg,#2c1b2b,#100c16);color:#f6e7ee;text-align:center;
+ box-shadow:0 0 30px rgba(220,157,190,.24)
 }
-
-.intro-moon:after{
- content:"";position:absolute;inset:12%;border-radius:50%;
- background:radial-gradient(circle at 70% 30%,rgba(60,8,23,.3),transparent 60%);
+#riddleCard h2{font:15px 'Cinzel Decorative',serif;color:#e9c0d2;letter-spacing:1px}
+#riddleCard p{font:18px 'Cormorant Garamond',serif;line-height:1.4}
+.riddleOption{
+ display:block;width:100%;margin:8px 0;padding:11px;border:1px solid #c998b2;
+ border-radius:10px;background:linear-gradient(145deg,#5a304a,#251526);
+ color:#fff0f6;font:12px 'Cormorant Garamond',serif
 }
-
-.intro-castle{
- position:absolute;width:min(100%,650px);height:62%;
- bottom:7%;opacity:.78;
- filter:drop-shadow(0 0 18px rgba(135,28,56,.32));
-}
-
-.intro-castle svg{width:100%;height:100%}
-
-.intro-ground{
- position:absolute;bottom:0;left:0;width:100%;height:22%;
- background:linear-gradient(0deg,#08060b 0%,rgba(15,8,14,.8) 45%,transparent);
-}
-
-.intro-figure{
- position:absolute;bottom:10%;width:38px;height:105px;
- opacity:.88;filter:drop-shadow(0 0 9px rgba(193,72,96,.5));
-}
-
-.intro-figure:before{
- content:"";position:absolute;width:27px;height:27px;
- border-radius:50%;top:0;left:6px;
- background:#171019;border:1px solid #8e5363;
-}
-
-.intro-figure:after{
- content:"";position:absolute;top:25px;left:0;
- width:39px;height:75px;
- background:linear-gradient(90deg,#100c14,#33202c,#100c14);
- clip-path:polygon(25% 0,75% 0,100% 100%,0 100%);
- border-bottom:1px solid #8e5363;
-}
-
-.intro-figure.male{left:calc(50% - 65px);transform:scale(1.12)}
-.intro-figure.female{left:calc(50% + 24px);transform:scale(.82)}
-
-.intro-content{
- position:relative;z-index:2;display:flex;
- flex-direction:column;align-items:center;
- width:100%;max-width:560px;margin-top:-10px;
-}
-
-#intro h1{
- font-family:'Cormorant Garamond',serif;
- font-weight:700;color:#f0cbd1;
- font-size:clamp(43px,11vw,78px);
- letter-spacing:.3px;line-height:1;
- text-shadow:0 0 12px #9f1d3b,0 0 32px #d52245,0 3px 8px #000;
- margin:0 0 12px;
-}
-
-.intro-subtitle{
- font-family:'Cinzel Decorative',serif;
- font-size:9px;letter-spacing:4px;color:#d9aab4;
- text-shadow:0 0 10px #8e2940;margin-bottom:16px;
-}
-
-#intro p{
- font-family:'Cormorant Garamond',serif;
- font-weight:600;font-size:18px;line-height:1.35;
- letter-spacing:.1px;color:#f0dce0;max-width:440px;
- margin:12px 0 22px;
- text-shadow:0 0 8px #8e2940,0 2px 5px #000;
-}
-
-.gothicButton{
- position:relative;color:#f5dce0;
- background:linear-gradient(145deg,#571629,#180a12 65%,#0c080e);
- border:1px solid #c17b89;padding:14px 27px;
- font-family:'Cinzel Decorative',serif;
- font-size:11px;letter-spacing:1.5px;
- box-shadow:0 0 14px #8b1b35,inset 0 0 12px rgba(190,73,99,.2);
- cursor:pointer;transition:transform .2s,box-shadow .2s;
-}
-
-.gothicButton:before,.gothicButton:after{
- content:"";position:absolute;top:50%;
- width:18px;height:1px;background:#d9aab4;
- box-shadow:0 0 7px #d52245;
-}
-
-.gothicButton:before{right:calc(100% + 9px)}
-.gothicButton:after{left:calc(100% + 9px)}
-.gothicButton:active{transform:scale(.96);box-shadow:0 0 22px #c12748}
-
-.intro-bottom{
- margin-top:25px;color:#b98b96;
- font:8px 'Cinzel Decorative',serif;
- letter-spacing:3px;text-shadow:0 0 8px #8e2940;
-}
-
-#hud{
- position:fixed;top:12px;left:12px;right:12px;
- display:flex;justify-content:space-between;gap:10px;
- color:#f0dadd;font:10px 'Cinzel Decorative',serif;
- text-shadow:0 0 8px #a91d3a;pointer-events:none;
-}
-
-#hint{
- position:fixed;top:42px;width:100%;
- text-align:center;color:#e8c9ce;
- font-family:'Cormorant Garamond',serif;
- font-weight:700;font-size:17px;letter-spacing:1.2px;
- text-shadow:0 0 9px #a51e3b,0 2px 5px #000;
- pointer-events:none;padding:0 12px;
-}
-
-#message{
- position:fixed;bottom:145px;left:8%;width:84%;
- text-align:center;color:#fff0f2;
- font-family:'Cormorant Garamond',serif;
- font-weight:600;font-size:clamp(19px,5vw,23px);
- line-height:1.3;letter-spacing:.3px;
- text-shadow:0 2px 9px #000;pointer-events:none;
-}
-
-.control{
- position:fixed;border-radius:50%;
- border:2px solid #a77b83;
- background:radial-gradient(circle,#38202a 0%,#160c13 68%,#08070b 100%);
- box-shadow:0 0 14px #8d203b,inset 0 0 14px #a52b46;
- touch-action:none;
-}
-
-#controls{bottom:20px;left:20px;width:94px;height:94px}
-
-#controls:after{
- content:"✥";position:absolute;top:50%;left:50%;
- transform:translate(-50%,-50%);
- font-size:35px;color:#d7b3ba;opacity:.32;pointer-events:none;
-}
-
-#stick{
- position:absolute;left:32px;top:32px;
- width:30px;height:30px;border-radius:50%;
- background:radial-gradient(circle,#a83c54,#3a101e);
- border:2px solid #e0b3bb;box-shadow:0 0 12px #d13c5b;z-index:2;
-}
-
-#look{
- bottom:20px;right:20px;width:94px;height:94px;
- display:flex;align-items:center;justify-content:center;
- color:#e6c8ce;font:10px 'Cinzel Decorative',serif;text-align:center;
-}
-
-#look span{z-index:1;pointer-events:none}
-
-#interact{
- position:fixed;right:35px;bottom:205px;
- width:54px;height:54px;border-radius:50%;
- color:#fff0f2;font-size:23px;padding:0;
- background:radial-gradient(circle,#a8324d,#260b16);
- border:2px solid #d5a0aa;box-shadow:0 0 16px #c12748;
-}
-
-#status{
- position:fixed;bottom:12px;left:0;width:100%;
- text-align:center;color:#ad9299;
- font:9px 'Cinzel Decorative',serif;pointer-events:none;
-}
-
 @media(max-height:650px){
- .intro-moon{top:7%;right:8%;width:100px;height:100px}
- .intro-castle{height:55%;bottom:4%}
- .intro-figure{bottom:7%}
- .intro-content{transform:scale(.88)}
- .intro-bottom{margin-top:14px}
+ #questPanel{top:62px;padding:8px 10px}
+ #questText{font-size:13px}
+ #inventoryButton{top:60px}
 }
-</style>
-</head>
 
-<body>
-
-<div id="intro">
- <div class="intro-scene">
-  <div class="intro-moon"></div>
-
-  <div class="intro-castle">
-   <svg viewBox="0 0 600 360" preserveAspectRatio="xMidYMax meet">
-    <defs>
-     <linearGradient id="castleShade" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#38202e"/>
-      <stop offset="100%" stop-color="#0b080f"/>
-     </linearGradient>
-    </defs>
-    <g fill="url(#castleShade)" stroke="#69404e" stroke-width="2">
-     <rect x="105" y="155" width="390" height="205"/>
-     <rect x="220" y="95" width="160" height="265"/>
-     <rect x="70" y="125" width="75" height="235"/>
-     <rect x="455" y="125" width="75" height="235"/>
-     <path d="M70 125 L107 45 L145 125 Z"/>
-     <path d="M455 125 L492 45 L530 125 Z"/>
-     <path d="M220 95 L300 5 L380 95 Z"/>
-     <path d="M260 360 V270 Q300 215 340 270 V360 Z" fill="#100811"/>
-     <path d="M92 230 Q107 190 122 230 V280 H92 Z" fill="#8f293e"/>
-     <path d="M478 230 Q493 190 508 230 V280 H478 Z" fill="#8f293e"/>
-     <rect x="175" y="195" width="35" height="70" rx="16" fill="#a42a45" stroke="none"/>
-     <rect x="390" y="195" width="35" height="70" rx="16" fill="#a42a45" stroke="none"/>
-     <rect x="278" y="125" width="44" height="75" rx="20" fill="#b5364d" stroke="none"/>
-    </g>
-    <g fill="#d65b6d" opacity=".7">
-     <circle cx="300" cy="30" r="3"/>
-     <circle cx="108" cy="80" r="2"/>
-     <circle cx="492" cy="80" r="2"/>
-    </g>
-    <g stroke="#8f5362" stroke-width="2" fill="none" opacity=".6">
-     <path d="M40 360 Q100 300 160 360"/>
-     <path d="M440 360 Q500 300 560 360"/>
-    </g>
-   </svg>
-  </div>
-
-  <div class="intro-ground"></div>
-  <div class="intro-figure male"></div>
-  <div class="intro-figure female"></div>
- </div>
-
- <div class="intro-content">
-  <div class="intro-subtitle">UN SUEÑO · UN SECRETO · UN RECUERDO</div>
-  <h1>THE LAST DREAM</h1>
-  <p>Hay recuerdos que ni siquiera el tiempo puede borrar a menos que tengas alzheimer.</p>
-  <button class="gothicButton" id="start">ENTRAR AL SUEÑO</button>
-  <div class="intro-bottom">LA ROSA NEGRA · EL CASTILLO OLVIDADO</div>
- </div>
-</div>
-
-<div id="hud">
- <span>THE LAST DREAM</span>
- <span>CAPÍTULO I</span>
-</div>
-
-<div id="hint">Explora El Castillo Papita Vagoneta</div>
-<div id="message">El silencio guarda un secreto o aveces no m deja dormir.</div>
-
-<div id="controls" class="control">
- <div id="stick"></div>
-</div>
-
-<div id="look" class="control">
- <span>MOVER<br>CÁMARA</span>
-</div>
-
-<button id="interact">✧</button>
+</style>  </head>  <body>  <div id="intro">  
+ <div class="intro-scene">  
+  <div class="intro-moon"></div>  
+  <div class="intro-castle">  
+   <svg viewBox="0 0 600 360" preserveAspectRatio="xMidYMax meet">  
+    <defs>  
+     <linearGradient id="castleShade" x1="0" y1="0" x2="0" y2="1">  
+      <stop offset="0%" stop-color="#38202e"/>  
+      <stop offset="100%" stop-color="#0b080f"/>  
+     </linearGradient>  
+    </defs>  
+    <g fill="url(#castleShade)" stroke="#69404e" stroke-width="2">  
+     <rect x="105" y="155" width="390" height="205"/>  
+     <rect x="220" y="95" width="160" height="265"/>  
+     <rect x="70" y="125" width="75" height="235"/>  
+     <rect x="455" y="125" width="75" height="235"/>  
+     <path d="M70 125 L107 45 L145 125 Z"/>  
+     <path d="M455 125 L492 45 L530 125 Z"/>  
+     <path d="M220 95 L300 5 L380 95 Z"/>  
+     <path d="M260 360 V270 Q300 215 340 270 V360 Z" fill="#100811"/>  
+     <path d="M92 230 Q107 190 122 230 V280 H92 Z" fill="#8f293e"/>  
+     <path d="M478 230 Q493 190 508 230 V280 H478 Z" fill="#8f293e"/>  
+     <rect x="175" y="195" width="35" height="70" rx="16" fill="#a42a45" stroke="none"/>  
+     <rect x="390" y="195" width="35" height="70" rx="16" fill="#a42a45" stroke="none"/>  
+     <rect x="278" y="125" width="44" height="75" rx="20" fill="#b5364d" stroke="none"/>  
+    </g>  
+    <g fill="#d65b6d" opacity=".7">  
+     <circle cx="300" cy="30" r="3"/>  
+     <circle cx="108" cy="80" r="2"/>  
+     <circle cx="492" cy="80" r="2"/>  
+    </g>  
+   </svg>  
+  </div>  
+  <div class="intro-ground"></div>  
+  <div class="intro-figure male"></div>  
+  <div class="intro-figure female"></div>  
+ </div>   <div class="intro-content">  
+  <div class="intro-subtitle">UN SUEÑO · UN SECRETO · UN RECUERDO</div>  
+  <h1>THE LAST DREAM</h1>  
+  <p>Hay recuerdos que ni siquiera el tiempo puede borrar a menos que tengas alzheimer.</p>  
+  <button class="gothicButton" id="start">ENTRAR AL SUEÑO</button>  
+  <div class="intro-bottom">LA ROSA NEGRA · EL CASTILLO OLVIDADO</div>  
+ </div>  
+</div>  <div id="hud"><span>THE LAST DREAM</span><span>CAPÍTULO I</span></div>  
+<div id="hint">Explora El Castillo Papita Vagoneta</div>  
+<div id="message">El silencio guarda un secreto o aveces no m deja dormir.</div>  
+<div id="controls" class="control"><div id="stick"></div></div>  
+<div id="look" class="control"><span>MOVER<br>CÁMARA</span></div>  
+<button id="interact">✧</button>  
 <div id="status">LA ROSA NEGRA · EL CASTILLO OLVIDADO</div>
+<div id="questPanel">
+ <div id="questTitle">MISIÓN ACTUAL</div>
+ <div id="questText">Encuentra la llave perdida.</div>
+ <div id="questProgress">Capítulo I · 0/5 etapas</div>
+</div>
+<button id="inventoryButton">✧ INVENTARIO</button>
+<div id="inventoryPanel">
+ <h3>OBJETOS ENCONTRADOS</h3>
+ <div id="inventoryList">Todavía no has recogido nada.</div>
+ <button id="inventoryClose">CERRAR</button>
+</div>
+<div id="riddleModal">
+ <div id="riddleCard">
+  <h2>LA BIBLIOTECA SILENCIOSA</h2>
+  <p>No tengo voz, pero puedo hablarte del ayer.<br>No tengo forma, pero puedo permanecer.<br>¿Qué soy?</p>
+  <button class="riddleOption" data-answer="wrong">Una llave</button>
+  <button class="riddleOption" data-answer="correct">Un recuerdo</button>
+  <button class="riddleOption" data-answer="wrong">La luna</button>
+ </div>
+</div>  <script type="module">  
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';  
 
-<script type="module">
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+// ESCENA  
+const scene=new THREE.Scene();  
+scene.background=new THREE.Color(0xf4e5ed);  
+scene.fog=new THREE.FogExp2(0xf3e3eb,0.0045);  
 
-// ESCENA
-const scene=new THREE.Scene();
-scene.background=new THREE.Color(0x17121d);
-scene.fog=new THREE.FogExp2(0x24202c,0.006);
+const camera=new THREE.PerspectiveCamera(65,innerWidth/innerHeight,.1,300);  
+const renderer=new THREE.WebGLRenderer({antialias:true});  
+renderer.setSize(innerWidth,innerHeight);  
+renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));  
+renderer.shadowMap.enabled=true;  
+renderer.shadowMap.type=THREE.PCFSoftShadowMap;  
+renderer.toneMapping=THREE.ACESFilmicToneMapping;  
+renderer.toneMappingExposure=1.25;  
+document.body.appendChild(renderer.domElement);  
 
-const camera=new THREE.PerspectiveCamera(65,innerWidth/innerHeight,.1,300);
+// ILUMINACIÓN COQUETTE  
+scene.add(new THREE.HemisphereLight(0xfff0f5,0xd8b9c5,2.5));  
 
-const renderer=new THREE.WebGLRenderer({antialias:true});
-renderer.setSize(innerWidth,innerHeight);
-renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));
-renderer.shadowMap.enabled=true;
-renderer.shadowMap.type=THREE.PCFSoftShadowMap;
-renderer.toneMapping=THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure=1.45;
-document.body.appendChild(renderer.domElement);
+const moonLight=new THREE.DirectionalLight(0xffe5d8,2.5);  
+moonLight.position.set(-20,30,-15);  
+moonLight.castShadow=true;  
+scene.add(moonLight);  
 
-// ILUMINACIÓN
-scene.add(new THREE.HemisphereLight(0xc9d2ed,0x51404a,2.2));
+const pinkLight=new THREE.PointLight(0xf4b8ce,65,100);  
+pinkLight.position.set(0,12,-35);  
+scene.add(pinkLight);  
 
-const moonLight=new THREE.DirectionalLight(0xffd2d5,2.2);
-moonLight.position.set(-20,30,-15);
-moonLight.castShadow=true;
-scene.add(moonLight);
+const champagneLight=new THREE.PointLight(0xffdfb8,55,100);  
+champagneLight.position.set(20,10,5);  
+scene.add(champagneLight);  
 
-const redLight=new THREE.PointLight(0xd52a48,100,90);
-redLight.position.set(0,12,-35);
-scene.add(redLight);
+// LUNA PERLADA  
+const moon=new THREE.Mesh(  
+new THREE.SphereGeometry(8,48,48),  
+new THREE.MeshBasicMaterial({color:0xffeaf1})  
+);  
+moon.position.set(-22,27,-70);  
+scene.add(moon);  
 
-const silverLight=new THREE.PointLight(0x9eaddd,75,90);
-silverLight.position.set(20,10,5);
-scene.add(silverLight);
+const moonGlow=new THREE.PointLight(0xffdce9,125,120);  
+moonGlow.position.copy(moon.position);  
+scene.add(moonGlow);  
 
-// LUNA
-const moon=new THREE.Mesh(
- new THREE.SphereGeometry(8,48,48),
- new THREE.MeshBasicMaterial({color:0xc92a43})
-);
-moon.position.set(-22,27,-70);
-scene.add(moon);
+// ESTRELLAS  
+const starPositions=[];  
+for(let i=0;i<750;i++){  
+starPositions.push((Math.random()-.5)*200,Math.random()*85+5,-Math.random()*130-10);  
+}  
+const starGeo=new THREE.BufferGeometry();  
+starGeo.setAttribute('position',new THREE.Float32BufferAttribute(starPositions,3));  
+const stars=new THREE.Points(  
+starGeo,  
+new THREE.PointsMaterial({color:0xffffff,size:.38,transparent:true,opacity:.95})  
+);  
+scene.add(stars);  
 
-const moonGlow=new THREE.PointLight(0xe33b50,170,120);
-moonGlow.position.copy(moon.position);
-scene.add(moonGlow);
+// NUBES  
+const clouds=[];  
+for(let i=0;i<14;i++){  
+const group=new THREE.Group();  
+for(let j=0;j<8;j++){  
+const puff=new THREE.Mesh(  
+new THREE.SphereGeometry(2.5+Math.random()*2,12,10),  
+new THREE.MeshBasicMaterial({color:0xf1d9e5,transparent:true,opacity:.75})  
+);  
+puff.position.set(j*2.5-8,Math.random()*2,0);  
+puff.scale.y=.5;  
+group.add(puff);  
+}  
+group.position.set((Math.random()-.5)*120,14+Math.random()*24,-25-Math.random()*70);  
+scene.add(group);  
+clouds.push(group);  
+}  
 
-// ESTRELLAS
-const starPositions=[];
-for(let i=0;i<750;i++){
- starPositions.push(
-  (Math.random()-.5)*200,
-  Math.random()*85+5,
-  -Math.random()*130-10
- );
-}
+// TERRENO Y CAMINO  
+const ground=new THREE.Mesh(  
+new THREE.PlaneGeometry(220,220),  
+new THREE.MeshStandardMaterial({color:0xd9c9ed,roughness:.92})  
+);  
+ground.rotation.x=-Math.PI/2;  
+ground.position.y=-.12;  
+ground.receiveShadow=true;  
+scene.add(ground);  
 
-const starGeo=new THREE.BufferGeometry();
-starGeo.setAttribute('position',new THREE.Float32BufferAttribute(starPositions,3));
+const path=new THREE.Mesh(  
+new THREE.PlaneGeometry(10,110),  
+new THREE.MeshStandardMaterial({color:0xe8dcf5,roughness:.82})  
+);  
+path.rotation.x=-Math.PI/2;  
+path.position.set(0,.01,-35);  
+scene.add(path);  
 
-const stars=new THREE.Points(
- starGeo,
- new THREE.PointsMaterial({color:0xf0eaff,size:.3,transparent:true,opacity:.9})
-);
-scene.add(stars);
+// CASTILLO EXTERIOR COQUETTE  
+const castle=new THREE.Group();  
+scene.add(castle);  
 
-// NUBES
-const clouds=[];
-for(let i=0;i<14;i++){
- const group=new THREE.Group();
+const ivoryMat=new THREE.MeshStandardMaterial({color:0xfff4f0,roughness:.78});  
+const pinkStoneMat=new THREE.MeshStandardMaterial({color:0xf4dce5,roughness:.8});  
+const roofMat=new THREE.MeshStandardMaterial({color:0xe9a9c1,roughness:.65});  
+const goldMatExterior=new THREE.MeshStandardMaterial({color:0xd5b477,metalness:.62,roughness:.3});  
+const windowGlowMat=new THREE.MeshBasicMaterial({color:0xffe3d2});  
 
- for(let j=0;j<8;j++){
-  const puff=new THREE.Mesh(
-   new THREE.SphereGeometry(2.5+Math.random()*2,12,10),
-   new THREE.MeshBasicMaterial({color:0x352631,transparent:true,opacity:.67})
-  );
-  puff.position.set(j*2.5-8,Math.random()*2,0);
-  puff.scale.y=.5;
-  group.add(puff);
- }
+function block(w,h,d,x,y,z,color=0xfff4f0,parent=castle){  
+const mesh=new THREE.Mesh(  
+new THREE.BoxGeometry(w,h,d),  
+color instanceof THREE.Material?color:new THREE.MeshStandardMaterial({color,roughness:.78})  
+);  
+mesh.position.set(x,y,z);  
+mesh.castShadow=true;  
+mesh.receiveShadow=true;  
+parent.add(mesh);  
+return mesh;  
+}  
 
- group.position.set(
-  (Math.random()-.5)*120,
-  14+Math.random()*24,
-  -25-Math.random()*70
- );
- scene.add(group);
- clouds.push(group);
-}
+function goldTrim(w,h,d,x,y,z){  
+return block(w,h,d,x,y,z,goldMatExterior);  
+}  
 
-// TERRENO
-const ground=new THREE.Mesh(
- new THREE.PlaneGeometry(220,220),
- new THREE.MeshStandardMaterial({color:0x34303a,roughness:1})
-);
-ground.rotation.x=-Math.PI/2;
-ground.position.y=-.12;
-ground.receiveShadow=true;
-scene.add(ground);
+function tower(x,z,h=19){  
+const base=new THREE.Mesh(new THREE.CylinderGeometry(3.5,4,h,24),pinkStoneMat);  
+base.position.set(x,h/2,z);  
+base.castShadow=true;base.receiveShadow=true;  
+castle.add(base);  
 
-// CAMINO
-const path=new THREE.Mesh(
- new THREE.PlaneGeometry(10,110),
- new THREE.MeshStandardMaterial({color:0x514751,roughness:1})
-);
-path.rotation.x=-Math.PI/2;
-path.position.set(0,.01,-35);
-scene.add(path);
+const lowerBand=new THREE.Mesh(new THREE.TorusGeometry(3.65,.12,10,32),goldMatExterior);  
+lowerBand.rotation.x=Math.PI/2;  
+lowerBand.position.set(x,2,z);  
+castle.add(lowerBand);  
 
-// CASTILLO
-const castle=new THREE.Group();
-scene.add(castle);
+const upperBand=new THREE.Mesh(new THREE.TorusGeometry(3.55,.13,10,32),goldMatExterior);  
+upperBand.rotation.x=Math.PI/2;  
+upperBand.position.set(x,h-1,z);  
+castle.add(upperBand);  
 
-function block(w,h,d,x,y,z,color=0x393440){
- const mesh=new THREE.Mesh(
-  new THREE.BoxGeometry(w,h,d),
-  new THREE.MeshStandardMaterial({color,roughness:.85})
- );
- mesh.position.set(x,y,z);
- mesh.castShadow=true;
- mesh.receiveShadow=true;
- castle.add(mesh);
- return mesh;
-}
+const roof=new THREE.Mesh(new THREE.ConeGeometry(4.5,8,24),roofMat);  
+roof.position.set(x,h+4,z);  
+roof.castShadow=true;  
+castle.add(roof);  
 
-function tower(x,z,h=19){
- const base=new THREE.Mesh(
-  new THREE.CylinderGeometry(3.5,4,h,12),
-  new THREE.MeshStandardMaterial({color:0x49404a})
- );
- base.position.set(x,h/2,z);
- base.castShadow=true;
- castle.add(base);
+const roofTip=new THREE.Mesh(new THREE.SphereGeometry(.28,16,12),goldMatExterior);  
+roofTip.position.set(x,h+8,z);  
+castle.add(roofTip);  
 
- const roof=new THREE.Mesh(
-  new THREE.ConeGeometry(4.5,8,12),
-  new THREE.MeshStandardMaterial({color:0x21141e})
- );
- roof.position.set(x,h+4,z);
- roof.castShadow=true;
- castle.add(roof);
+const lamp=new THREE.PointLight(0xffd8bd,5,20);  
+lamp.position.set(x,7,z+3);  
+castle.add(lamp);  
+}  
 
- const lamp=new THREE.PointLight(0xc62b48,7,18);
- lamp.position.set(x,7,z+3);
- castle.add(lamp);
-}
+block(13,19,6,-10.5,9,-48,0xfff4f0);  
+block(13,19,6,10.5,9,-48,0xfff4f0);  
+block(14,10,7,0,24,-48,0xfff8f2);  
 
-// MUROS DEL CASTILLO CON UNA ENTRADA REAL
-// El hueco central permite atravesar el muro cuando se abra la puerta.
-block(13,19,6,-10.5,9,-48);
-block(13,19,6,10.5,9,-48);
-block(34,5,6,0,16.5,-48);
+tower(-17,-46,20);  
+tower(17,-46,20);  
+tower(-11,-57,17);  
+tower(11,-57,17);  
 
-block(3.4,26,7,-5.3,13,-43);
-block(3.4,26,7,5.3,13,-43);
-block(14,11,7,0,20.5,-43);
+goldTrim(27,.22,.18,0,18.8,-44.85);  
+goldTrim(28,.18,.18,0,20.2,-44.85);  
+goldTrim(15,.25,.18,0,29,-44.35);  
+goldTrim(27,.2,.18,0,1,-44.85);  
 
-tower(-17,-46,20);
-tower(17,-46,20);
-tower(-11,-57,17);
-tower(11,-57,17);
+for(let x=-14;x<=14;x+=4){  
+block(2,2,2,x,20,-48,0xf3d5df);  
+goldTrim(1.5,.12,2.05,x,21,-48);  
+}  
 
-for(let x=-14;x<=14;x+=4){
- block(2,2,2,x,20,-48,0x393440);
-}
+// VENTANAS ILUMINADAS  
+for(const x of [-10,-5,5,10]){  
+const frame=new THREE.Mesh(new THREE.BoxGeometry(1.9,4,.3),goldMatExterior);  
+frame.position.set(x,10,-44.75);  
+castle.add(frame);  
 
-for(const x of [-10,-5,5,10]){
- const win=new THREE.Mesh(
-  new THREE.BoxGeometry(1.5,3.5,.25),
-  new THREE.MeshBasicMaterial({color:0xc43b54})
- );
- win.position.set(x,10,-44.8);
- castle.add(win);
-}
+const win=new THREE.Mesh(new THREE.BoxGeometry(1.5,3.5,.25),windowGlowMat);  
+win.position.set(x,10,-44.55);  
+castle.add(win);  
 
-// PUERTA GÓTICA INTERACTIVA
-const doorGroup=new THREE.Group();
-doorGroup.position.set(0,0,-39.15);
-scene.add(doorGroup);
+const cross=new THREE.Mesh(new THREE.BoxGeometry(.09,3.5,.12),goldMatExterior);  
+cross.position.set(x,10,-44.35);  
+castle.add(cross);  
 
-const doorWood=new THREE.MeshStandardMaterial({
- color:0x160d16,roughness:.48,metalness:.22
+const crossH=new THREE.Mesh(new THREE.BoxGeometry(1.5,.09,.12),goldMatExterior);  
+crossH.position.set(x,10,-44.34);  
+castle.add(crossH);  
+}  
+
+// MARCO ORNAMENTAL DE LA ENTRADA  
+const doorFrame=new THREE.Group();  
+castle.add(doorFrame);  
+
+const stoneMat=new THREE.MeshStandardMaterial({color:0xfff0ed,roughness:.72});  
+const frameGold=new THREE.MeshStandardMaterial({color:0xd4b477,metalness:.65,roughness:.3});  
+
+const frameLeft=new THREE.Mesh(new THREE.BoxGeometry(.85,9,.9),stoneMat);  
+frameLeft.position.set(-4,4.5,-44.3);  
+doorFrame.add(frameLeft);  
+
+const frameRight=frameLeft.clone();  
+frameRight.position.x=4;  
+doorFrame.add(frameRight);  
+
+const lintel=new THREE.Mesh(new THREE.BoxGeometry(8.8,.85,.9),stoneMat);  
+lintel.position.set(0,9,-44.3);  
+doorFrame.add(lintel);  
+
+const archTrim=new THREE.Mesh(new THREE.TorusGeometry(4,.16,12,32,Math.PI),frameGold);  
+archTrim.rotation.z=Math.PI;  
+archTrim.position.set(0,9,-44.25);  
+doorFrame.add(archTrim);  
+// PUERTAS DOBLES BLANCAS  
+const doors=[];  
+const doorMat=new THREE.MeshStandardMaterial({color:0xfff4f2,roughness:.38,metalness:.08});  
+const doorDetail=new THREE.MeshStandardMaterial({color:0xd0ad70,metalness:.72,roughness:.28});  
+const doorPink=new THREE.MeshStandardMaterial({color:0xf0c8d6,roughness:.5});  
+
+for(const side of [-1,1]){  
+const hinge=new THREE.Group();  
+hinge.position.set(side*3.65,0,-44.65);  
+castle.add(hinge);  
+
+const panel=new THREE.Mesh(new THREE.BoxGeometry(3.65,7.5,.42),doorMat);  
+panel.position.x=-side*1.825;  
+panel.position.y=3.75;  
+panel.castShadow=true;  
+hinge.add(panel);  
+
+const inset=new THREE.Mesh(new THREE.BoxGeometry(2.45,5.9,.08),doorPink);  
+inset.position.set(-side*1.825,3.75,.24);  
+hinge.add(inset);  
+
+const insetBorder=new THREE.Mesh(new THREE.BoxGeometry(2.65,6.1,.06),doorDetail);  
+insetBorder.position.set(-side*1.825,3.75,.22);  
+hinge.add(insetBorder);  
+
+for(const x of [-1,1]){  
+const strip=new THREE.Mesh(new THREE.BoxGeometry(.09,6.9,.06),doorDetail);  
+strip.position.set(-side*1.825+x*1.48,3.75,.29);  
+hinge.add(strip);  
+}  
+
+const centerLine=new THREE.Mesh(new THREE.BoxGeometry(.08,7,.07),doorDetail);  
+centerLine.position.set(-side*1.825,3.75,.31);  
+hinge.add(centerLine);  
+
+const ornament=new THREE.Mesh(new THREE.OctahedronGeometry(.42),doorDetail);  
+ornament.position.set(-side*1.825,4,.34);  
+hinge.add(ornament);  
+
+const handle=new THREE.Mesh(new THREE.SphereGeometry(.13,16,12),doorDetail);  
+handle.position.set(-side*1.825-side*.75,3.4,.36);  
+hinge.add(handle);  
+
+doors.push({hinge,side});  
+}  
+
+// ÁRBOLES  
+const trees=[];  
+
+function createTree(x,z){  
+const group=new THREE.Group();  
+
+const trunk=new THREE.Mesh(  
+new THREE.CylinderGeometry(.35,.65,5,8),  
+new THREE.MeshStandardMaterial({color:0x92745e})  
+);  
+trunk.position.y=2.5;  
+group.add(trunk);  
+
+for(let i=0;i<3;i++){  
+const leaves=new THREE.Mesh(  
+new THREE.ConeGeometry(3-i*.4,6,9),  
+new THREE.MeshStandardMaterial({color:0x849b7d})  
+);  
+leaves.position.y=5+i*2.4;  
+group.add(leaves);  
+}  
+
+group.position.set(x,0,z);  
+scene.add(group);  
+trees.push(group);  
+}  
+
+for(let i=0;i<38;i++){  
+createTree(-18-Math.random()*35,-4-Math.random()*100);  
+createTree(18+Math.random()*35,-4-Math.random()*100);  
+}  
+
+// ROSAS  
+const roses=[];  
+
+function createRose(x,z){  
+const group=new THREE.Group();  
+
+const stem=new THREE.Mesh(  
+new THREE.CylinderGeometry(.06,.09,1.4,7),  
+new THREE.MeshStandardMaterial({color:0x718b60})  
+);  
+stem.position.y=.7;  
+group.add(stem);  
+
+const flower=new THREE.Mesh(  
+new THREE.SphereGeometry(.43,16,12),  
+new THREE.MeshStandardMaterial({color:0xe8a3bd})  
+);  
+flower.scale.set(1,.7,1);  
+flower.position.y=1.5;  
+group.add(flower);  
+
+for(let i=0;i<3;i++){  
+const petal=new THREE.Mesh(  
+new THREE.SphereGeometry(.22,10,8),  
+new THREE.MeshStandardMaterial({color:0xd783a5})  
+);  
+petal.scale.set(1,.6,1);  
+petal.position.set(Math.cos(i*2.1)*.3,1.5,Math.sin(i*2.1)*.3);  
+group.add(petal);  
+}  
+
+group.position.set(x,0,z);  
+scene.add(group);  
+roses.push(group);  
+}  
+
+for(let i=0;i<35;i++){  
+createRose(-8-Math.random()*7,-5-Math.random()*70);  
+createRose(8+Math.random()*7,-5-Math.random()*70);  
+}  
+
+// JARDINES DE LIRIOS Y TULIPANES  
+const flowerGarden=new THREE.Group();  
+scene.add(flowerGarden);  
+
+const stemMat=new THREE.MeshStandardMaterial({color:0x718c69,roughness:.9});  
+const leafMat=new THREE.MeshStandardMaterial({color:0x91a982,roughness:.85});  
+
+const tulipColors=[0xffdce9,0xf7b9d0,0xf4c6d8,0xffe6ed,0xeaa2bf,0xf8d0bd,0xf5aeca];  
+const lilyColors=[0xffe3ed,0xf7bfd4,0xf2a9c5,0xffd4e2,0xe9a0bd,0xf8c7b6,0xf5b6d0];  
+
+const tulipMaterials=tulipColors.map(color=>new THREE.MeshStandardMaterial({color,roughness:.48,metalness:.04}));  
+const lilyMaterials=lilyColors.map(color=>new THREE.MeshStandardMaterial({color,roughness:.48,metalness:.04}));  
+const flowerCenterMat=new THREE.MeshStandardMaterial({color:0xd9a66f,roughness:.5,metalness:.12});  
+
+function createTulip(x,z){  
+const flower=new THREE.Group();  
+const height=1.05+Math.random()*.65;  
+const color=tulipMaterials[Math.floor(Math.random()*tulipMaterials.length)];  
+
+const stem=new THREE.Mesh(new THREE.CylinderGeometry(.035,.055,height,7),stemMat);  
+stem.position.y=height/2;  
+flower.add(stem);  
+
+for(let i=0;i<2;i++){  
+const leaf=new THREE.Mesh(new THREE.ConeGeometry(.14,.72,6),leafMat);  
+leaf.position.set(i===0?-.13:.13,height*.48,0);  
+leaf.rotation.z=i===0?.65:-.65;  
+leaf.rotation.x=i===0?-.18:.18;  
+flower.add(leaf);  
+}  
+
+const bloom=new THREE.Group();  
+
+for(let i=0;i<6;i++){  
+const angle=i*Math.PI/3;  
+const petal=new THREE.Mesh(new THREE.SphereGeometry(.19,12,10),color);  
+petal.scale.set(.8,1.35,.72);  
+petal.position.set(Math.cos(angle)*.12,0,Math.sin(angle)*.12);  
+petal.rotation.z=Math.cos(angle)*.18;  
+petal.rotation.x=Math.sin(angle)*.18;  
+bloom.add(petal);  
+}  
+
+const center=new THREE.Mesh(new THREE.SphereGeometry(.12,12,10),color);  
+center.scale.set(1,.8,1);  
+bloom.add(center);  
+
+bloom.position.y=height+.02;  
+flower.add(bloom);  
+
+flower.position.set(x,0,z);  
+flower.rotation.y=Math.random()*Math.PI*2;  
+flower.scale.setScalar(.8+Math.random()*.45);  
+flowerGarden.add(flower);  
+}  
+
+function createLily(x,z){  
+const flower=new THREE.Group();  
+const height=1.1+Math.random()*.65;  
+const color=lilyMaterials[Math.floor(Math.random()*lilyMaterials.length)];  
+
+const stem=new THREE.Mesh(new THREE.CylinderGeometry(.035,.055,height,7),stemMat);  
+stem.position.y=height/2;  
+flower.add(stem);  
+
+for(let i=0;i<3;i++){  
+const leaf=new THREE.Mesh(new THREE.ConeGeometry(.12,.85,6),leafMat);  
+const angle=i*Math.PI*2/3;  
+leaf.position.set(Math.cos(angle)*.16,height*.48,Math.sin(angle)*.16);  
+leaf.rotation.z=Math.cos(angle)*.75;  
+leaf.rotation.x=Math.sin(angle)*.75;  
+flower.add(leaf);  
+}  
+
+const bloom=new THREE.Group();  
+
+for(let i=0;i<6;i++){  
+const angle=i*Math.PI/3;  
+const petal=new THREE.Mesh(new THREE.SphereGeometry(.22,14,10),color);  
+petal.scale.set(.55,1.65,.48);  
+petal.position.set(Math.cos(angle)*.22,.03,Math.sin(angle)*.22);  
+petal.rotation.z=-Math.cos(angle)*.65;  
+petal.rotation.x=Math.sin(angle)*.65;  
+bloom.add(petal);  
+}  
+
+const center=new THREE.Mesh(new THREE.SphereGeometry(.095,12,10),flowerCenterMat);  
+center.position.y=.08;  
+bloom.add(center);  
+
+for(let i=0;i<4;i++){  
+const angle=i*Math.PI/2;  
+
+const stamen=new THREE.Mesh(new THREE.CylinderGeometry(.012,.018,.24,6),flowerCenterMat);  
+stamen.position.set(Math.cos(angle)*.1,.18,Math.sin(angle)*.1);  
+bloom.add(stamen);  
+
+const pollen=new THREE.Mesh(new THREE.SphereGeometry(.035,8,8),flowerCenterMat);  
+pollen.position.set(Math.cos(angle)*.1,.31,Math.sin(angle)*.1);  
+bloom.add(pollen);  
+}  
+
+bloom.position.y=height;  
+flower.add(bloom);  
+
+flower.position.set(x,0,z);  
+flower.rotation.y=Math.random()*Math.PI*2;  
+flower.scale.setScalar(.8+Math.random()*.4);  
+flowerGarden.add(flower);  
+}  
+
+// CAMAS DE TIERRA  
+const soilMat=new THREE.MeshStandardMaterial({color:0x9b7885,roughness:1});  
+
+for(const side of [-1,1]){  
+const soil=new THREE.Mesh(new THREE.PlaneGeometry(7.5,18),soilMat);  
+soil.rotation.x=-Math.PI/2;  
+soil.position.set(side*9.2,-.055,-40);  
+flowerGarden.add(soil);  
+}  
+
+for(const side of [-1,1]){  
+for(let i=0;i<105;i++){  
+const x=side*(6.1+Math.random()*6.2);  
+const z=-31-Math.random()*17;  
+if(Math.random()>.48)createTulip(x,z);  
+else createLily(x,z);  
+}  
+
+for(let i=0;i<12;i++){  
+const x=side*(5.7+Math.random()*1.4);  
+const z=-39-Math.random()*7;  
+if(Math.random()>.5)createTulip(x,z);  
+else createLily(x,z);  
+}  
+}  
+
+for(const side of [-1,1]){  
+const flowerLight=new THREE.PointLight(0xffc6dc,8,16);  
+flowerLight.position.set(side*8.5,2,-41);  
+flowerGarden.add(flowerLight);  
+}  
+
+// INTERIOR DEL CASTILLO  
+const interior=new THREE.Group();  
+scene.add(interior);  
+const pearlBorderMat=new THREE.MeshStandardMaterial({
+color:0xfff4fa,
+roughness:.18,
+metalness:.72,
+emissive:0xf6c9df,
+emissiveIntensity:.22
 });
 
-const doorInset=new THREE.MeshStandardMaterial({
- color:0x2b1421,roughness:.55,metalness:.18
+const pearlDetailMat=new THREE.MeshStandardMaterial({
+color:0xf8dce9,
+roughness:.2,
+metalness:.55,
+emissive:0xffe8f2,
+emissiveIntensity:.16
 });
 
-const oldGold=new THREE.MeshStandardMaterial({
- color:0xb18a50,roughness:.3,metalness:.8
-});
+const goldMat=new THREE.MeshStandardMaterial({color:0xb18a55,metalness:.75,roughness:.28});
 
-const doorRed=new THREE.MeshStandardMaterial({
- color:0x741b35,roughness:.4,metalness:.35
-});
+const hallFloor=new THREE.Mesh(new THREE.BoxGeometry(34,.35,38),stoneFloor);
+hallFloor.position.set(0,-.22,-66);
+hallFloor.receiveShadow=true;
+interior.add(hallFloor);
 
-const doorLeft=new THREE.Group();
-const doorRight=new THREE.Group();
+block(1,14,38,-17,7,-66,0x28212d,interior);
+block(1,14,38,17,7,-66,0x28212d,interior);
+block(34,14,1,0,7,-85,0x28212d,interior);
 
-doorLeft.position.set(-3.7,0,0);
-doorRight.position.set(3.7,0,0);
-doorGroup.add(doorLeft,doorRight);
+// ALFOMBRA PRINCIPAL Y BORDES NACARADOS
+const carpet=new THREE.Mesh(new THREE.BoxGeometry(7,.045,31),pearlCarpetMat);
+carpet.position.set(0,.01,-66);
+carpet.receiveShadow=true;
+interior.add(carpet);
 
-function doorDetail(parent,geometry,material,x,y,z){
- const mesh=new THREE.Mesh(geometry,material);
- mesh.position.set(x,y,z);
- mesh.castShadow=true;
- mesh.receiveShadow=true;
- parent.add(mesh);
- return mesh;
+// BORDES LONGITUDINALES APERLADOS
+for(const x of [-3.57,3.57]){
+const border=new THREE.Mesh(new THREE.BoxGeometry(.16,.065,31.15),pearlBorderMat);
+border.position.set(x,.045,-66);
+interior.add(border);
+
+const innerLine=new THREE.Mesh(new THREE.BoxGeometry(.045,.07,30.8),pearlDetailMat);
+innerLine.position.set(x+(x<0?.13:-.13),.05,-66);
+interior.add(innerLine);
 }
 
-function makeDoorLeaf(parent,direction){
- // Hoja principal
- doorDetail(
-  parent,new THREE.BoxGeometry(3.68,10.5,.48),doorWood,
-  direction*1.84,5.25,0
- );
-
- // Paneles decorativos
- for(let row=0;row<2;row++){
-  const y=2.9+row*4.1;
-
-  doorDetail(
-   parent,new THREE.BoxGeometry(2.85,3.45,.12),doorInset,
-   direction*1.84,y,.29
-  );
-
-  // Molduras doradas del panel
-  for(const side of [-1,1]){
-   doorDetail(
-    parent,new THREE.BoxGeometry(.045,3.25,.045),oldGold,
-    direction*1.84+side*1.37,y,.37
-   );
-  }
-
-  doorDetail(
-   parent,new THREE.BoxGeometry(2.78,.045,.045),oldGold,
-   direction*1.84,y-1.62,.37
-  );
-
-  doorDetail(
-   parent,new THREE.BoxGeometry(2.78,.045,.045),oldGold,
-   direction*1.84,y+1.62,.37
-  );
- }
-
- // Líneas verticales exteriores
- for(const side of [-1,1]){
-  doorDetail(
-   parent,new THREE.BoxGeometry(.07,10.2,.07),oldGold,
-   direction*1.84+side*1.72,5.25,.34
-  );
- }
-
- // Motivo central de rosa
- const roseRing=doorDetail(
-  parent,new THREE.TorusGeometry(.48,.055,10,32),
-  oldGold,direction*1.84,5.25,.43
- );
- roseRing.rotation.z=Math.PI/4;
-
- doorDetail(
-  parent,new THREE.SphereGeometry(.22,20,16),
-  doorRed,direction*1.84,5.25,.43,1,1,.45
- );
-
- // Pequeños pétalos metálicos
- for(let i=0;i<8;i++){
-  const angle=i*Math.PI/4;
-  const petal=doorDetail(
-   parent,new THREE.SphereGeometry(.13,12,10),
-   doorRed,
-   direction*1.84+Math.cos(angle)*.32,
-   5.25+Math.sin(angle)*.32,
-   .46
-  );
-  petal.scale.set(.8,1.5,.35);
-  petal.rotation.z=angle;
- }
-
- // Remaches
- for(let y of [1,9.5]){
-  for(const side of [-1,1]){
-   doorDetail(
-    parent,new THREE.SphereGeometry(.075,10,8),
-    oldGold,direction*1.84+side*1.55,y,.4
-   );
-  }
- }
+// BORDES DE LOS EXTREMOS
+for(const z of [-50.48,-81.52]){
+const endBorder=new THREE.Mesh(new THREE.BoxGeometry(7.15,.065,.16),pearlBorderMat);
+endBorder.position.set(0,.045,z);
+interior.add(endBorder);
 }
 
-// La hoja izquierda se extiende hacia el centro.
-makeDoorLeaf(doorLeft,1);
-// La hoja derecha se extiende hacia el centro.
-makeDoorLeaf(doorRight,-1);
-
-// Tiradores dorados junto al centro de la puerta
+// PEQUEÑOS DETALLES PERLADOS
 for(const side of [-1,1]){
- const handleX=side*1.84;
-
- doorDetail(
-  side<0?doorLeft:doorRight,
-  new THREE.SphereGeometry(.14,16,12),
-  oldGold,
-  side<0?1.84:-1.84,5.1,.55
- );
-
- doorDetail(
-  side<0?doorLeft:doorRight,
-  new THREE.TorusGeometry(.16,.035,8,20),
-  oldGold,
-  side<0?1.84:-1.84,4.78,.55
- );
+for(let z=-80;z<=-52;z+=2.8){
+const pearl=new THREE.Mesh(new THREE.SphereGeometry(.055,12,10),pearlBorderMat);
+pearl.position.set(side*3.57,.09,z);
+interior.add(pearl);
+}
 }
 
-// Marco vertical de piedra y detalles metálicos
-const frameStone=new THREE.MeshStandardMaterial({
- color:0x51404b,roughness:.8
+// DESTELLOS MÁGICOS EN CADA PASO SOBRE LA ALFOMBRA
+const stepFlashes=[];
+const flashRingGeometry=new THREE.TorusGeometry(.22,.025,8,28);
+const flashRingMaterial=new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:1});
+const flashCoreMaterial=new THREE.MeshBasicMaterial({color:0xfffaff,transparent:true,opacity:1});
+const flashSparkMaterial=new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:1});
+
+function createFootstepFlash(position){
+const flash=new THREE.Group();
+
+const ring=new THREE.Mesh(flashRingGeometry,flashRingMaterial.clone());
+ring.rotation.x=-Math.PI/2;
+ring.position.y=.035;
+flash.add(ring);
+
+const core=new THREE.Mesh(new THREE.CircleGeometry(.13,24),flashCoreMaterial.clone());
+core.rotation.x=-Math.PI/2;
+core.position.y=.025;
+flash.add(core);
+
+// CUATRO PEQUEÑOS DESTELLOS ALREDEDOR DE LA HUELLA
+for(let i=0;i<4;i++){
+const angle=i*Math.PI/2+.35;
+const sparkle=new THREE.Mesh(new THREE.SphereGeometry(.045,8,8),flashSparkMaterial.clone());
+sparkle.position.set(Math.cos(angle)*.2,.075,Math.sin(angle)*.2);
+flash.add(sparkle);
+}
+
+flash.position.copy(position);
+flash.position.y=.025;
+flash.scale.setScalar(.55);
+scene.add(flash);
+stepFlashes.push({group:flash,age:0});
+}
+
+function updateFootstepFlashes(delta){
+for(let i=stepFlashes.length-1;i>=0;i--){
+const item=stepFlashes[i];
+item.age+=delta;
+const progress=item.age/.58;
+
+if(progress>=1){
+scene.remove(item.group);
+item.group.traverse(obj=>{
+if(obj.material&&obj.material!==flashRingMaterial&&obj.material!==flashCoreMaterial&&obj.material!==flashSparkMaterial){
+obj.material.dispose();
+}
+});
+stepFlashes.splice(i,1);
+continue;
+}
+
+const scale=.55+progress*1.65;
+item.group.scale.setScalar(scale);
+const opacity=1-progress;
+
+item.group.traverse(obj=>{
+if(obj.material&&obj.material.transparent)obj.material.opacity=opacity;
+});
+}
+}
+
+// COLUMNAS DEL VESTÍBULO
+function hallColumn(x,z){
+const col=new THREE.Group();
+
+const base=new THREE.Mesh(new THREE.BoxGeometry(1.8,.55,1.8),trimMat);
+base.position.y=.28;
+col.add(base);
+
+const shaft=new THREE.Mesh(new THREE.CylinderGeometry(.48,.62,10,12),wallMat);
+shaft.position.y=5.5;
+col.add(shaft);
+
+const capital=new THREE.Mesh(new THREE.BoxGeometry(1.7,.65,1.7),trimMat);
+capital.position.y=10.5;
+col.add(capital);
+
+const capTop=new THREE.Mesh(new THREE.ConeGeometry(1.15,1.5,4),wallMat);
+capTop.position.y=11.55;
+capTop.rotation.y=Math.PI/4;
+col.add(capTop);
+
+col.position.set(x,0,z);
+col.traverse(o=>{
+if(o.isMesh){o.castShadow=true;o.receiveShadow=true}
+});
+interior.add(col);
+}
+
+for(const z of [-53,-63,-73,-82]){
+hallColumn(-13,z);
+hallColumn(13,z);
+}
+
+// VENTANALES ALTOS
+for(const side of [-1,1]){
+for(const z of [-57,-70,-80]){
+const windowFrame=new THREE.Mesh(new THREE.BoxGeometry(.25,6,2.7),trimMat);
+windowFrame.position.set(side*16.35,8,z);
+interior.add(windowFrame);
+
+const glass=new THREE.Mesh(
+new THREE.BoxGeometry(.28,5.4,2.1),
+new THREE.MeshBasicMaterial({color:0x6d263d})
+);
+glass.position.set(side*16.18,8,z);
+interior.add(glass);
+
+const cross=new THREE.Mesh(new THREE.BoxGeometry(.32,.12,2.2),goldMat);
+cross.position.set(side*16,8,z);
+interior.add(cross);
+
+const glow=new THREE.PointLight(0xe9a9c7,9,16);
+glow.position.set(side*14.5,7,z);
+interior.add(glow);
+}
+}
+
+// ESCALERA DOBLE
+function stairStep(x,y,z,w=4){
+const step=new THREE.Mesh(new THREE.BoxGeometry(w,.42,1.2),trimMat);
+step.position.set(x,y,z);
+step.castShadow=true;
+step.receiveShadow=true;
+interior.add(step);
+}
+
+for(let i=0;i<9;i++){
+stairStep(-5,.25+i*.48,-79+i*1.15,4.5);
+stairStep(5,.25+i*.48,-79+i*1.15,4.5);
+}
+
+const landing=new THREE.Mesh(new THREE.BoxGeometry(14,.5,4),stoneFloor);
+landing.position.set(0,4.5,-68);
+interior.add(landing);
+
+// BARANDILLAS
+for(const x of [-7.5,7.5]){
+const rail=new THREE.Mesh(new THREE.BoxGeometry(.18,1,12),goldMat);
+rail.position.set(x,2.7,-73);
+interior.add(rail);
+
+for(let i=0;i<8;i++){
+const baluster=new THREE.Mesh(new THREE.CylinderGeometry(.045,.06,1.8,8),trimMat);
+baluster.position.set(x,1.8,-78+i*1.4);
+interior.add(baluster);
+}
+}
+
+// LÁMPARAS DE ARAÑA PERLADAS
+const chandeliers=[];
+const chandelierLights=[];
+
+function createChandelier(x,z,scale=1){
+const chandelier=new THREE.Group();
+
+const chain=new THREE.Mesh(new THREE.CylinderGeometry(.035,.035,5,8),goldMat);
+chain.position.y=13;
+chandelier.add(chain);
+
+const upperRing=new THREE.Mesh(new THREE.TorusGeometry(1.15,.075,10,40),pearlBorderMat);
+upperRing.rotation.x=Math.PI/2;
+upperRing.position.y=12;
+chandelier.add(upperRing);
+
+const ring=new THREE.Mesh(new THREE.TorusGeometry(2,.12,10,40),goldMat);
+ring.rotation.x=Math.PI/2;
+ring.position.y=10;
+chandelier.add(ring);
+
+const lowerRing=new THREE.Mesh(new THREE.TorusGeometry(1.15,.07,10,40),goldMat);
+lowerRing.rotation.x=Math.PI/2;
+lowerRing.position.y=8.9;
+chandelier.add(lowerRing);
+
+for(let i=0;i<8;i++){
+const a=i*Math.PI/4;
+
+const arm=new THREE.Mesh(new THREE.CylinderGeometry(.045,.07,2.3,8),goldMat);
+arm.position.set(Math.cos(a)*1.2,10,Math.sin(a)*1.2);
+arm.rotation.z=Math.cos(a)*.5;
+arm.rotation.x=Math.sin(a)*.5;
+chandelier.add(arm);
+
+const crystal=new THREE.Mesh(
+new THREE.OctahedronGeometry(.22),
+new THREE.MeshStandardMaterial({
+color:0xfff1f8,
+metalness:.35,
+roughness:.12,
+emissive:0xf4b9d2,
+emissiveIntensity:.55
+})
+);
+crystal.position.set(Math.cos(a)*1.45,9.45,Math.sin(a)*1.45);
+chandelier.add(crystal);
+
+const candle=new THREE.Mesh(
+new THREE.CylinderGeometry(.09,.12,.65,8),
+new THREE.MeshStandardMaterial({color:0xfff0df,roughness:.35})
+);
+candle.position.set(Math.cos(a)*2,10.55,Math.sin(a)*2);
+chandelier.add(candle);
+
+const flame=new THREE.Mesh(
+new THREE.SphereGeometry(.12,10,8),
+new THREE.MeshBasicMaterial({color:0xffd6a1})
+);
+flame.scale.y=1.6;
+flame.position.set(Math.cos(a)*2,11,Math.sin(a)*2);
+chandelier.add(flame);
+
+const tinyGlow=new THREE.Mesh(
+new THREE.SphereGeometry(.23,10,8),
+new THREE.MeshBasicMaterial({color:0xffe8d1,transparent:true,opacity:.22})
+);
+tinyGlow.position.set(Math.cos(a)*2,11,Math.sin(a)*2);
+chandelier.add(tinyGlow);
+}
+
+chandelier.scale.setScalar(scale);
+chandelier.position.set(x,0,z);
+interior.add(chandelier);
+chandeliers.push(chandelier);
+
+const warmLight=new THREE.PointLight(0xffd2a1,42,30);
+warmLight.position.set(x,10,z);
+interior.add(warmLight);
+chandelierLights.push(warmLight);
+
+const pearlLight=new THREE.PointLight(0xffc9e1,19,24);
+pearlLight.position.set(x,7.5,z);
+interior.add(pearlLight);
+chandelierLights.push(pearlLight);
+}
+
+// TRES CANDELABROS EN EL SALÓN
+createChandelier(0,-58,1);
+createChandelier(0,-70,.78);
+createChandelier(0,-80,.68);
+const stoneFloor=new THREE.MeshStandardMaterial({color:0x302936,roughness:.32,metalness:.18});  
+const wallMat=new THREE.MeshStandardMaterial({color:0x28212d,roughness:.85});  
+const trimMat=new THREE.MeshStandardMaterial({color:0x76606d,roughness:.45,metalness:.35});  
+
+/* ALFOMBRA ROSA PERLADO */  
+const pearlCarpetMat=new THREE.MeshStandardMaterial({  
+color:0xf2c6dc,  
+roughness:.22,  
+metalness:.25,  
+emissive:0x9e5879,  
+emissiveIntensity:.15  
+});  // LUCES AMBIENTALES ROSA PERLADO Y CHAMPÁN
+const hallAmbientPink=new THREE.PointLight(0xffc6df,30,42);
+hallAmbientPink.position.set(0,7,-67);
+interior.add(hallAmbientPink);
+
+const hallAmbientChampagne=new THREE.PointLight(0xffe4bd,22,35);
+hallAmbientChampagne.position.set(0,5,-54);
+interior.add(hallAmbientChampagne);
+
+const hallAmbientBack=new THREE.PointLight(0xf5c2d9,24,38);
+hallAmbientBack.position.set(0,8,-82);
+interior.add(hallAmbientBack);
+
+// APLIQUES DE PARED CON CRISTALES
+const wallSconceLights=[];
+
+function createWallSconce(x,z){
+const sconce=new THREE.Group();
+
+const plate=new THREE.Mesh(
+new THREE.SphereGeometry(.32,16,12),
+goldMat
+);
+plate.scale.set(.65,1.35,.35);
+sconce.add(plate);
+
+const arm=new THREE.Mesh(
+new THREE.CylinderGeometry(.045,.065,.65,8),
+goldMat
+);
+arm.rotation.x=Math.PI/2;
+arm.position.z=.25;
+sconce.add(arm);
+
+const candle=new THREE.Mesh(
+new THREE.CylinderGeometry(.09,.12,.48,10),
+new THREE.MeshStandardMaterial({color:0xfff0dd,roughness:.4})
+);
+candle.position.set(0,.35,.45);
+sconce.add(candle);
+
+const flame=new THREE.Mesh(
+new THREE.SphereGeometry(.105,12,10),
+new THREE.MeshBasicMaterial({color:0xffd6a1})
+);
+flame.scale.y=1.5;
+flame.position.set(0,.64,.45);
+sconce.add(flame);
+
+const crystal=new THREE.Mesh(
+new THREE.OctahedronGeometry(.2),
+new THREE.MeshStandardMaterial({
+color:0xffe9f3,
+metalness:.45,
+roughness:.12,
+emissive:0xf3bad2,
+emissiveIntensity:.6
+})
+);
+crystal.position.set(0,-.45,.35);
+sconce.add(crystal);
+
+sconce.position.set(x,6.8,z);
+sconce.rotation.y=x<0?Math.PI/2:-Math.PI/2;
+interior.add(sconce);
+
+const light=new THREE.PointLight(0xffd0b2,12,13);
+light.position.set(x*.91,7,z);
+interior.add(light);
+wallSconceLights.push(light);
+}
+
+for(const side of [-1,1]){
+for(const z of [-55,-64,-74,-81]){
+createWallSconce(side*15.8,z);
+}
+}
+
+// CUADROS DECORATIVOS
+for(const side of [-1,1]){
+for(const z of [-60,-72,-82]){
+const frame=new THREE.Mesh(new THREE.BoxGeometry(.2,3.2,2.5),goldMat);
+frame.position.set(side*16,7,z);
+interior.add(frame);
+
+const picture=new THREE.Mesh(
+new THREE.BoxGeometry(.22,2.7,2),
+new THREE.MeshBasicMaterial({color:0x3b1729})
+);
+picture.position.set(side*15.85,7,z);
+interior.add(picture);
+
+const symbol=new THREE.Mesh(
+new THREE.TorusGeometry(.65,.08,8,24),
+new THREE.MeshBasicMaterial({color:0xc15a70})
+);
+symbol.position.set(side*15.68,7,z);
+symbol.rotation.y=Math.PI/2;
+interior.add(symbol);
+}
+}
+
+// JARRONES Y FLORES JUNTO A LA ENTRADA
+function vase(x,z){
+const pot=new THREE.Mesh(new THREE.CylinderGeometry(.35,.5,.9,12),trimMat);
+pot.position.set(x,.45,z);
+interior.add(pot);
+
+for(let i=0;i<5;i++){
+const stem=new THREE.Mesh(
+new THREE.CylinderGeometry(.025,.035,1.1,6),
+new THREE.MeshStandardMaterial({color:0x405b39})
+);
+stem.position.set(x+(i-2)*.13,1.25,z);
+stem.rotation.z=(i-2)*.15;
+interior.add(stem);
+
+const bloom=new THREE.Mesh(
+new THREE.SphereGeometry(.19,12,10),
+new THREE.MeshStandardMaterial({color:0xe7a6c2})
+);
+bloom.position.set(x+(i-2)*.13,1.85,z);
+interior.add(bloom);
+}
+}
+
+vase(-10,-51);
+vase(10,-51);
+
+// PARTÍCULAS MÁGICAS FLOTANTES DEL VESTÍBULO
+const magicParticles=[];
+const particleCount=95;
+const particleGeometry=new THREE.BufferGeometry();
+const particlePositions=new Float32Array(particleCount*3);
+const particleSizes=new Float32Array(particleCount);
+
+for(let i=0;i<particleCount;i++){
+particlePositions[i*3]=(Math.random()-.5)*29;
+particlePositions[i*3+1]=Math.random()*11+.5;
+particlePositions[i*3+2]=-51-Math.random()*32;
+particleSizes[i]=.045+Math.random()*.075;
+
+magicParticles.push({
+x:particlePositions[i*3],
+y:particlePositions[i*3+1],
+z:particlePositions[i*3+2],
+speed:.25+Math.random()*.55,
+phase:Math.random()*Math.PI*2
+});
+}
+
+particleGeometry.setAttribute('position',new THREE.BufferAttribute(particlePositions,3));
+
+const particleMaterial=new THREE.PointsMaterial({
+color:0xffe8f3,
+size:.22,
+transparent:true,
+opacity:.82,
+blending:THREE.AdditiveBlending,
+depthWrite:false,
+sizeAttenuation:true
 });
 
-for(const side of [-1,1]){
- const pillar=new THREE.Mesh(
-  new THREE.BoxGeometry(.65,12,.9),frameStone
- );
- pillar.position.set(side*4.05,6,.12);
- pillar.castShadow=true;
- doorGroup.add(pillar);
+const floatingMagic=new THREE.Points(particleGeometry,particleMaterial);
+interior.add(floatingMagic);
 
- const goldLine=new THREE.Mesh(
-  new THREE.BoxGeometry(.09,11.5,.95),oldGold
- );
- goldLine.position.set(side*3.78,6,.15);
- doorGroup.add(goldLine);
+// POLVO BRILLANTE MÁS PEQUEÑO
+const dustCount=150;
+const dustPositions=[];
 
- // Capitel de cada columna
- const capital=new THREE.Mesh(
-  new THREE.BoxGeometry(1.05,.45,1.15),oldGold
- );
- capital.position.set(side*4.05,11.8,.12);
- doorGroup.add(capital);
-}
-
-// Arco apuntado de estilo gótico
-const archPoints=[
- new THREE.Vector3(-4.05,11.9,.15),
- new THREE.Vector3(-3.75,13.1,.15),
- new THREE.Vector3(-2.9,14.25,.15),
- new THREE.Vector3(-1.65,15.2,.15),
- new THREE.Vector3(0,15.8,.15),
- new THREE.Vector3(1.65,15.2,.15),
- new THREE.Vector3(2.9,14.25,.15),
- new THREE.Vector3(3.75,13.1,.15),
- new THREE.Vector3(4.05,11.9,.15)
-];
-
-const archCurve=new THREE.CatmullRomCurve3(archPoints);
-const arch=new THREE.Mesh(
- new THREE.TubeGeometry(archCurve,60,.22,10,false),
- oldGold
+for(let i=0;i<dustCount;i++){
+dustPositions.push(
+(Math.random()-.5)*32,
+Math.random()*12,
+-51-Math.random()*34
 );
-doorGroup.add(arch);
-
-// Arco interior oscuro
-const innerArchPoints=archPoints.map(p=>
- new THREE.Vector3(p.x*.88,p.y*.88+.8,.22)
-);
-
-const innerArch=new THREE.Mesh(
- new THREE.TubeGeometry(new THREE.CatmullRomCurve3(innerArchPoints),60,.09,8,false),
- doorRed
-);
-doorGroup.add(innerArch);
-
-// Adorno superior del arco
-const crest=new THREE.Mesh(
- new THREE.OctahedronGeometry(.42),
- oldGold
-);
-crest.position.set(0,15.7,.3);
-crest.scale.set(.8,1.5,.5);
-doorGroup.add(crest);
-
-// Luces junto a la entrada
-for(const side of [-1,1]){
- const lantern=new THREE.Group();
- lantern.position.set(side*5.3,7.3,.2);
- doorGroup.add(lantern);
-
- const glow=new THREE.PointLight(0xd9475c,13,13);
- glow.position.set(0,0,1);
- lantern.add(glow);
-
- const lampBody=new THREE.Mesh(
-  new THREE.BoxGeometry(.42,.65,.4),
-  new THREE.MeshStandardMaterial({
-   color:0x28131d,emissive:0x75182e,emissiveIntensity:1.2
-  })
- );
- lantern.add(lampBody);
-
- const cap=new THREE.Mesh(
-  new THREE.ConeGeometry(.38,.35,4),
-  oldGold
- );
- cap.position.y=.48;
- lantern.add(cap);
 }
 
-// Estado y animación de la puerta
-let doorOpen=false;
-let nearDoor=false;
+const dustGeometry=new THREE.BufferGeometry();
+dustGeometry.setAttribute('position',new THREE.Float32BufferAttribute(dustPositions,3));
 
-function animateDoor(){
- const target=doorOpen?1.28:0;
- doorLeft.rotation.y=THREE.MathUtils.lerp(
-  doorLeft.rotation.y,-target,.055
- );
- doorRight.rotation.y=THREE.MathUtils.lerp(
-  doorRight.rotation.y,target,.055
- );
-}
+const dustMaterial=new THREE.PointsMaterial({
+color:0xfff4e8,
+size:.075,
+transparent:true,
+opacity:.5,
+blending:THREE.AdditiveBlending,
+depthWrite:false
+});
 
-// ÁRBOLES
-const trees=[];
-function createTree(x,z){
- const group=new THREE.Group();
+const floatingDust=new THREE.Points(dustGeometry,dustMaterial);
+interior.add(floatingDust);
 
- const trunk=new THREE.Mesh(
-  new THREE.CylinderGeometry(.35,.65,5,8),
-  new THREE.MeshStandardMaterial({color:0x493039})
- );
- trunk.position.y=2.5;
- group.add(trunk);
-
- for(let i=0;i<3;i++){
-  const leaves=new THREE.Mesh(
-   new THREE.ConeGeometry(3-i*.4,6,9),
-   new THREE.MeshStandardMaterial({color:0x263b32})
-  );
-  leaves.position.y=5+i*2.4;
-  group.add(leaves);
- }
-
- group.position.set(x,0,z);
- scene.add(group);
- trees.push(group);
-}
-
-for(let i=0;i<38;i++){
- createTree(-18-Math.random()*35,-4-Math.random()*100);
- createTree(18+Math.random()*35,-4-Math.random()*100);
-}
-
-// ROSAS
-const roses=[];
-function createRose(x,z){
- const group=new THREE.Group();
-
- const stem=new THREE.Mesh(
-  new THREE.CylinderGeometry(.06,.09,1.4,7),
-  new THREE.MeshStandardMaterial({color:0x527044})
- );
- stem.position.y=.7;
- group.add(stem);
-
- const flower=new THREE.Mesh(
-  new THREE.SphereGeometry(.43,16,12),
-  new THREE.MeshStandardMaterial({color:0x991c39})
- );
- flower.scale.set(1,.7,1);
- flower.position.y=1.5;
- group.add(flower);
-
- for(let i=0;i<3;i++){
-  const petal=new THREE.Mesh(
-   new THREE.SphereGeometry(.22,10,8),
-   new THREE.MeshStandardMaterial({color:0x4b1024})
-  );
-  petal.scale.set(1,.6,1);
-  petal.position.set(Math.cos(i*2.1)*.3,1.5,Math.sin(i*2.1)*.3);
-  group.add(petal);
- }
-
- group.position.set(x,0,z);
- scene.add(group);
- roses.push(group);
-}
-
-for(let i=0;i<35;i++){
- createRose(-8-Math.random()*7,-5-Math.random()*70);
- createRose(8+Math.random()*7,-5-Math.random()*70);
-}
-
-// MATERIALES
+// MATERIALES DE PERSONAJES
 function material(color,roughness=.75,metalness=0){
- return new THREE.MeshStandardMaterial({color,roughness,metalness});
+return new THREE.MeshStandardMaterial({color,roughness,metalness});
 }
 
 const whiteMat=material(0xf4f0ed);
@@ -822,597 +1314,154 @@ const roseBlack=material(0x21121f);
 const roseLace=material(0x57404d);
 const stockingMat=material(0x100e17,.6);
 const shoeMat=material(0x08080d,.3,.25);
-
-// MAQUILLAJE SUAVE DE THE BLACK ROSE
 const softEyeliner=material(0x39232b,.8);
 const softLip=material(0x98505d,.65);
 const lipLine=material(0x713744,.7);
-const blushMat=new THREE.MeshBasicMaterial({
- color:0xc77b83,transparent:true,opacity:.22,depthWrite:false
-});
+const blushMat=new THREE.MeshBasicMaterial({color:0xc77b83,transparent:true,opacity:.22,depthWrite:false});
 
 // PERSONAJES
 function createCharacter(options){
- const group=new THREE.Group();
- const female=!!options.female;
+const group=new THREE.Group();
+const female=!!options.female;
+const skin=material(female?0xeac2ad:0xe6c4b2,.72);
+const hair=female?blonde:hairBlack;
+const hairShade=female?blondeDark:material(0x29212a);
 
- const skin=material(female?0xeac2ad:0xe6c4b2,.72);
- const hair=female?blonde:hairBlack;
- const hairShade=female?blondeDark:material(0x29212a);
-
- function part(geo,mat,x,y,z,sx=1,sy=1,sz=1,parent=group){
-  const m=new THREE.Mesh(geo,mat);
-  m.position.set(x,y,z);
-  m.scale.set(sx,sy,sz);
-  m.castShadow=true;
-  m.receiveShadow=true;
-  parent.add(m);
-  return m;
- }
-
- // PIERNAS
- const legs=[];
- const legMat=female?stockingMat:blackCloth;
-
- for(const side of [-1,1]){
-  const leg=part(
-   new THREE.CapsuleGeometry(female?.13:.19,.72,6,12),
-   legMat,side*(female?.19:.23),.68,0,
-   1,female?1:1.08,1
-  );
-  legs.push(leg);
-
-  if(female){
-   part(new THREE.BoxGeometry(.34,.16,.48),shoeMat,side*.19,.13,.09);
-   part(new THREE.BoxGeometry(.34,.055,.48),silver,side*.19,.19,.09);
-   part(new THREE.BoxGeometry(.25,.045,.045),shoeMat,side*.19,.23,.25);
-  }else{
-   part(new THREE.BoxGeometry(.39,.2,.53),blackLeather,side*.23,.12,.08);
-   part(new THREE.BoxGeometry(.4,.055,.54),blackCloth,side*.23,.055,.08);
-
-   part(
-    new THREE.CylinderGeometry(.19,.17,.42,12),
-    blackCloth,side*.23,1.04,0,1.08,1,1.1
-   );
-  }
- }
-
- // CUERPO
- if(!female){
-  part(new THREE.CapsuleGeometry(.34,.54,6,12),whiteMat,0,1.83,0,1,1.1,.82);
-
-  const jacketLeft=part(
-   new THREE.BoxGeometry(.43,1.02,.16),blackLeather,-.22,1.82,.16
-  );
-  jacketLeft.rotation.z=.025;
-
-  const jacketRight=part(
-   new THREE.BoxGeometry(.43,1.02,.16),blackLeather,.22,1.82,.16
-  );
-  jacketRight.rotation.z=-.025;
-
-  const lapel1=part(new THREE.BoxGeometry(.18,.49,.045),blackLeather,-.16,2.08,.27);
-  lapel1.rotation.z=-.28;
-  const lapel2=part(new THREE.BoxGeometry(.18,.49,.045),blackLeather,.16,2.08,.27);
-  lapel2.rotation.z=.28;
-
-  part(new THREE.BoxGeometry(.018,.78,.018),silver,0,1.77,.255);
-  part(new THREE.BoxGeometry(.15,.025,.025),silver,-.29,1.55,.25);
-  part(new THREE.BoxGeometry(.15,.025,.025),silver,.29,1.55,.25);
-
-  part(new THREE.CylinderGeometry(.15,.15,.13,20),whiteMat,0,2.34,0);
-
-  const chain=part(new THREE.TorusGeometry(.13,.009,6,28),silver,0,2.16,.25);
-  chain.rotation.x=Math.PI/2;
-  part(new THREE.OctahedronGeometry(.045),silver,0,2.01,.27,.7,1.3,.7);
-
- }else{
-  part(new THREE.CylinderGeometry(.25,.62,.78,16),blackCloth,0,1.47,0);
-  part(new THREE.CylinderGeometry(.61,.64,.07,20),roseLace,0,1.12,0);
-
-  part(new THREE.BoxGeometry(.62,.68,.39),blackLeather,0,1.91,.015);
-  part(new THREE.BoxGeometry(.48,.58,.035),roseBlack,0,1.92,.22);
-
-  for(const x of [-.22,.22]){
-   part(new THREE.BoxGeometry(.018,.57,.025),silver,x,1.91,.25);
-  }
-
-  for(let i=0;i<5;i++){
-   part(new THREE.BoxGeometry(.34,.018,.025),roseLace,0,2.12-i*.105,.255);
-  }
-
-  part(new THREE.BoxGeometry(.34,.09,.035),roseLace,0,2.29,.2);
-  part(new THREE.OctahedronGeometry(.07),silver,0,2.2,.27,.8,1.1,.8);
- }
-
- // CUELLO
- part(new THREE.CylinderGeometry(.12,.14,.25,16),skin,0,2.42,0);
-
- // CABEZA
- part(new THREE.SphereGeometry(.34,32,28),skin,0,2.76,.015,.91,1.12,.88);
-
- // OREJAS
- for(const side of [-1,1]){
-  part(new THREE.SphereGeometry(.075,16,12),skin,side*.33,2.75,0,.7,1,.65);
- }
-
- // OJOS Y CEJAS
- for(const side of [-1,1]){
-  part(
-   new THREE.SphereGeometry(female?.105:.085,20,16),
-   eyeWhite,side*(female?.145:.14),2.79,.30,
-   1,female?1.18:1,.42
-  );
-
-  part(
-   new THREE.SphereGeometry(female?.065:.052,18,14),
-   brownEyes,side*(female?.145:.14),2.79,.335,
-   1,female?1.16:1,.38
-  );
-
-  part(
-   new THREE.SphereGeometry(.022,12,10),
-   eyeWhite,side*(female?.13:.13)-.012,2.81,.35
-  );
-
-  const brow=part(
-   new THREE.BoxGeometry(.16,.035,.045),
-   hair,side*.14,2.94,.30
-  );
-  brow.rotation.z=female?-side*.015:side*.08;
-
-  if(female){
-   const liner=part(
-    new THREE.BoxGeometry(.19,.012,.018),
-    softEyeliner,side*.145,2.865,.345
-   );
-   liner.rotation.z=-side*.035;
-
-   const wing=part(
-    new THREE.BoxGeometry(.045,.012,.016),
-    softEyeliner,side*.245,2.875,.337
-   );
-   wing.rotation.z=side*.25;
-
-   part(
-    new THREE.SphereGeometry(.09,16,12),
-    blushMat,side*.235,2.665,.29,.95,.35,.18
-   );
-  }
- }
-
- // NARIZ Y BOCA
- part(new THREE.SphereGeometry(.045,12,10),skin,0,2.68,.34,.7,1.3,.7);
-
- if(female){
-  part(
-   new THREE.SphereGeometry(.075,18,12),
-   softLip,0,2.565,.325,.95,.34,.3
-  );
-  part(new THREE.BoxGeometry(.105,.008,.012),lipLine,0,2.57,.35);
- }else{
-  part(new THREE.BoxGeometry(.11,.018,.025),material(0x86565a),0,2.57,.315);
- }
-
- // CABELLO BASE Y NUCA
- part(new THREE.SphereGeometry(.39,28,22),hair,0,2.98,-.035,1.04,.82,1.08);
- part(new THREE.BoxGeometry(.66,.36,.48),hair,0,2.73,-.23);
-
- for(const side of [-1,1]){
-  const lock1=part(new THREE.CapsuleGeometry(.095,.48,5,10),hair,side*.31,2.65,-.04);
-  lock1.rotation.z=-side*.12;
-
-  const lock2=part(new THREE.CapsuleGeometry(.075,.35,5,10),hairShade,side*.37,2.45,-.03);
-  lock2.rotation.z=-side*.2;
-
-  const lock3=part(new THREE.CapsuleGeometry(.065,.25,5,10),hair,side*.27,2.39,-.08);
-  lock3.rotation.z=side*.18;
- }
-
- if(!female){
-  // CABELLO NEGRO TIPO LIBRITO
-  const fringeLeft=part(new THREE.CapsuleGeometry(.085,.31,5,10),hair,-.12,2.94,.29);
-  fringeLeft.rotation.z=-.27;
-
-  const fringeRight=part(new THREE.CapsuleGeometry(.085,.31,5,10),hair,.12,2.94,.29);
-  fringeRight.rotation.z=.27;
-
-  const front1=part(new THREE.CapsuleGeometry(.055,.28,5,10),hair,-.23,2.79,.28);
-  front1.rotation.z=-.28;
-
-  const front2=part(new THREE.CapsuleGeometry(.055,.28,5,10),hair,.23,2.79,.28);
-  front2.rotation.z=.28;
-
-  // LENTES RECTANGULARES DORADOS
-  const glasses=new THREE.Group();
-  const frameMat=material(0xc49b54,.25,.8);
-
-  for(const side of [-1,1]){
-   const frame=new THREE.Mesh(
-    new THREE.BoxGeometry(.19,.125,.018),frameMat
-   );
-   frame.position.set(side*.14,2.79,.365);
-   glasses.add(frame);
-
-   const lens=new THREE.Mesh(
-    new THREE.PlaneGeometry(.155,.09),
-    new THREE.MeshPhysicalMaterial({
-     color:0xe8e1dc,transparent:true,opacity:.16,roughness:.12
-    })
-   );
-   lens.position.set(side*.14,2.79,.374);
-   glasses.add(lens);
-
-   const temple=new THREE.Mesh(
-    new THREE.BoxGeometry(.018,.018,.28),frameMat
-   );
-   temple.position.set(side*.24,2.79,.22);
-   glasses.add(temple);
-  }
-
-  const bridge=new THREE.Mesh(new THREE.BoxGeometry(.09,.018,.018),frameMat);
-  bridge.position.set(0,2.79,.37);
-  glasses.add(bridge);
-  group.add(glasses);
-
- }else{
-  // CERQUILLO RUBIO ELEVADO
-  const fringeLeft=part(
-   new THREE.CapsuleGeometry(.075,.20,5,10),hair,-.13,3.09,.29
-  );
-  fringeLeft.rotation.z=-.20;
-
-  const fringeRight=part(
-   new THREE.CapsuleGeometry(.075,.20,5,10),hair,.13,3.09,.29
-  );
-  fringeRight.rotation.z=.20;
-
-  for(const side of [-1,1]){
-   const curl=part(
-    new THREE.CapsuleGeometry(.075,.28,5,10),
-    hairShade,side*.4,2.57,-.04
-   );
-   curl.rotation.z=-side*.32;
-  }
-
-  // LENTES CIRCULARES DORADOS
-  const glasses=new THREE.Group();
-  const frameMat=material(0xc49b54,.25,.8);
-
-  for(const side of [-1,1]){
-   const frame=new THREE.Mesh(
-    new THREE.TorusGeometry(.095,.012,10,32),frameMat
-   );
-   frame.position.set(side*.14,2.79,.365);
-   glasses.add(frame);
-
-   const lens=new THREE.Mesh(
-    new THREE.PlaneGeometry(.15,.15),
-    new THREE.MeshPhysicalMaterial({
-     color:0xe8e1dc,transparent:true,opacity:.14,roughness:.12
-    })
-   );
-   lens.position.set(side*.14,2.79,.35);
-   glasses.add(lens);
-
-   const temple=new THREE.Mesh(
-    new THREE.BoxGeometry(.015,.015,.27),frameMat
-   );
-   temple.position.set(side*.23,2.79,.21);
-   glasses.add(temple);
-  }
-
-  const bridge=new THREE.Mesh(new THREE.BoxGeometry(.08,.015,.015),frameMat);
-  bridge.position.set(0,2.79,.37);
-  glasses.add(bridge);
-  group.add(glasses);
- }
-
- // BRAZOS Y MANGAS
- const arms=[];
- for(const side of [-1,1]){
-  const arm=part(
-   new THREE.CapsuleGeometry(.115,.66,6,12),
-   female?blackCloth:blackLeather,side*.53,1.75,0
-  );
-  arms.push(arm);
-
-  if(female){
-   const sleeve=part(
-    new THREE.ConeGeometry(.32,.78,12),
-    blackCloth,side*.57,1.73,.015
-   );
-   sleeve.rotation.z=side*.72;
-   sleeve.rotation.x=.08;
-
-   const cuff=part(
-    new THREE.TorusGeometry(.22,.035,8,16),
-    roseLace,side*.78,1.37,.04
-   );
-   cuff.rotation.x=Math.PI/2;
-
-   part(new THREE.SphereGeometry(.105,16,12),skin,side*.57,1.28,.02);
-  }else{
-   part(new THREE.SphereGeometry(.11,16,12),skin,side*.53,1.28,.02);
-   part(new THREE.BoxGeometry(.24,.09,.28),blackLeather,side*.53,1.35,.01);
-  }
- }
-
- // ACCESORIOS DE THE BLACK ROSE
- if(female){
-  const choker=part(new THREE.TorusGeometry(.14,.025,8,24),blackLeather,0,2.39,.03);
-  choker.rotation.x=Math.PI/2;
-
-  for(const side of [-1,1]){
-   part(new THREE.SphereGeometry(.035,12,10),silver,side*.36,2.65,.02);
-   part(new THREE.OctahedronGeometry(.055),silver,side*.36,2.55,.02);
-   part(new THREE.SphereGeometry(.07,12,10),roseLace,side*.29,1.25,.05);
-  }
- }
-
- group.userData.arms=arms;
- group.userData.legs=legs;
- return group;
+function part(geo,mat,x,y,z,sx=1,sy=1,sz=1,parent=group){
+const m=new THREE.Mesh(geo,mat);
+m.position.set(x,y,z);
+m.scale.set(sx,sy,sz);
+m.castShadow=true;
+m.receiveShadow=true;
+parent.add(m);
+return m;
 }
 
-// PROTAGONISTA
-const player=createCharacter({female:false});
-player.scale.setScalar(1);
-scene.add(player);
-player.position.set(0,0,8);
+// PIERNAS
+const legs=[];
+const legMat=female?stockingMat:blackCloth;
 
-// THE BLACK ROSE
-const blackRose=createCharacter({female:true});
-blackRose.scale.setScalar(1.48/1.80);
-blackRose.position.set(5,0,-33);
-blackRose.rotation.y=-.5;
-scene.add(blackRose);
+for(const side of [-1,1]){
+const leg=part(
+new THREE.CapsuleGeometry(female?.13:.19,.72,6,12),
+legMat,
+side*(female?.19:.23),.68,0,1,female?1:1.08,1
+);
+legs.push(leg);
 
-// ILUMINACIÓN DEL JARDÍN
-const gardenLight=new THREE.PointLight(0xa62b48,28,35);
-gardenLight.position.set(5,5,-33);
-scene.add(gardenLight);
-
-// CÁMARA EN TERCERA PERSONA
-let cameraAngle=0;
-let verticalAngle=.18;
-const cameraDistance=8;
-let cameraHeight=2.1;
-
-function updateCamera(){
- const target=new THREE.Vector3(
-  player.position.x,player.position.y+1.65,player.position.z
- );
-
- const horizontal=Math.cos(verticalAngle)*cameraDistance;
-
- const desired=new THREE.Vector3(
-  target.x+Math.sin(cameraAngle)*horizontal,
-  target.y+cameraHeight+Math.sin(verticalAngle)*cameraDistance,
-  target.z+Math.cos(cameraAngle)*horizontal
- );
-
- camera.position.lerp(desired,.15);
- camera.lookAt(target);
+if(female){
+part(new THREE.BoxGeometry(.34,.16,.48),shoeMat,side*.19,.13,.09);
+part(new THREE.BoxGeometry(.34,.055,.48),silver,side*.19,.19,.09);
+part(new THREE.BoxGeometry(.25,.045,.045),shoeMat,side*.19,.23,.25);
+}else{
+part(new THREE.BoxGeometry(.39,.2,.53),blackLeather,side*.23,.12,.08);
+part(new THREE.BoxGeometry(.4,.055,.54),blackCloth,side*.23,.055,.08);
+part(new THREE.CylinderGeometry(.19,.17,.42,12),blackCloth,side*.23,1.04,0,1.08,1,1.1);
+}
 }
 
-// JOYSTICK
-const pad=document.getElementById('controls');
-const stick=document.getElementById('stick');
-let moveX=0,moveY=0,joystickActive=false;
+// CUERPO
+if(!female){
+part(new THREE.CapsuleGeometry(.34,.54,6,12),whiteMat,0,1.83,0,1,1.1,.82);
 
-pad.addEventListener('pointerdown',e=>{
- joystickActive=true;
- pad.setPointerCapture(e.pointerId);
- moveJoystick(e);
-});
+const jacketLeft=part(new THREE.BoxGeometry(.43,1.02,.16),blackLeather,-.22,1.82,.16);
+jacketLeft.rotation.z=.025;
 
-pad.addEventListener('pointermove',e=>{
- if(joystickActive)moveJoystick(e);
-});
+const jacketRight=part(new THREE.BoxGeometry(.43,1.02,.16),blackLeather,.22,1.82,.16);
+jacketRight.rotation.z=-.025;
 
-function moveJoystick(e){
- const rect=pad.getBoundingClientRect();
- let x=e.clientX-(rect.left+rect.width/2);
- let y=e.clientY-(rect.top+rect.height/2);
- const length=Math.hypot(x,y);
+const lapel1=part(new THREE.BoxGeometry(.18,.49,.045),blackLeather,-.16,2.08,.27);
+lapel1.rotation.z=-.28;
 
- if(length>30){x=x/length*30;y=y/length*30}
+const lapel2=part(new THREE.BoxGeometry(.18,.49,.045),blackLeather,.16,2.08,.27);
+lapel2.rotation.z=.28;
 
- moveX=x/30;
- moveY=y/30;
- stick.style.transform=`translate(${x}px,${y}px)`;
+part(new THREE.BoxGeometry(.018,.78,.018),silver,0,1.77,.255);
+part(new THREE.BoxGeometry(.15,.025,.025),silver,-.29,1.55,.25);
+part(new THREE.BoxGeometry(.15,.025,.025),silver,.29,1.55,.25);
+part(new THREE.CylinderGeometry(.15,.15,.13,20),whiteMat,0,2.34,0);
+
+const chain=part(new THREE.TorusGeometry(.13,.009,6,28),silver,0,2.16,.25);
+chain.rotation.x=Math.PI/2;
+
+part(new THREE.OctahedronGeometry(.045),silver,0,2.01,.27,.7,1.3,.7);
+
+}else{
+part(new THREE.CylinderGeometry(.25,.62,.78,16),blackCloth,0,1.47,0);
+part(new THREE.CylinderGeometry(.61,.64,.07,20),roseLace,0,1.12,0);
+part(new THREE.BoxGeometry(.62,.68,.39),blackLeather,0,1.91,.015);
+part(new THREE.BoxGeometry(.48,.58,.035),roseBlack,0,1.92,.22);
+
+for(const x of [-.22,.22]){
+part(new THREE.BoxGeometry(.018,.57,.025),silver,x,1.91,.25);
 }
 
-function releaseJoystick(){
- joystickActive=false;
- moveX=0;moveY=0;
- stick.style.transform='translate(0,0)';
+for(let i=0;i<5;i++){
+part(new THREE.BoxGeometry(.34,.018,.025),roseLace,0,2.12-i*.105,.255);
 }
 
-pad.addEventListener('pointerup',releaseJoystick);
-pad.addEventListener('pointercancel',releaseJoystick);
-
-// CÁMARA LIBRE
-const look=document.getElementById('look');
-let looking=false,lastLookX=0,lastLookY=0;
-
-look.addEventListener('pointerdown',e=>{
- looking=true;
- lastLookX=e.clientX;
- lastLookY=e.clientY;
- look.setPointerCapture(e.pointerId);
-});
-
-look.addEventListener('pointermove',e=>{
- if(!looking)return;
-
- const dx=e.clientX-lastLookX;
- const dy=e.clientY-lastLookY;
-
- cameraAngle-=dx*.009;
- verticalAngle-=dy*.009;
- verticalAngle=THREE.MathUtils.clamp(verticalAngle,-.35,.95);
-
- lastLookX=e.clientX;
- lastLookY=e.clientY;
-});
-
-look.addEventListener('pointerup',()=>looking=false);
-look.addEventListener('pointercancel',()=>looking=false);
-
-// TECLADO
-const keys={};
-window.addEventListener('keydown',e=>keys[e.key.toLowerCase()]=true);
-window.addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);
-
-// HISTORIA E INTERACCIONES
-let started=false;
-let nearRose=false;
-let storyStep=0;
-
-const message=document.getElementById('message');
-const hint=document.getElementById('hint');
-
-document.getElementById('start').addEventListener('click',()=>{
- started=true;
- document.getElementById('intro').style.display='none';
-
- storyStep=1;
- message.textContent='Te chancaste la cabeza por Macriado y despiertas en un castillo muy lindo.';
-});
-
-document.getElementById('interact').addEventListener('click',()=>{
- if(!started)return;
-
- // PRIMERO SE COMPLETAN LAS DOS FRASES DE INTRODUCCIÓN
- if(storyStep===1){
-  message.textContent='No sabes cómo llegaste (pq no usaste Maps, jaa)';
-  storyStep=2;
-  return;
- }
-
- // ABRIR LA PUERTA CUANDO EL JUGADOR ESTÁ CERCA
- if(nearDoor && !doorOpen){
-  doorOpen=true;
-  message.textContent='Las puertas antiguas se abren lentamente... El castillo te da la bienvenida.';
-  return;
- }
-
- if(nearDoor && doorOpen){
-  message.textContent='La entrada está abierta. El castillo guarda muchos secretos.';
-  return;
- }
-
- // ENCUENTRO CON THE BLACK ROSE
- if(nearRose){
-  message.textContent='The Black Rose te observa. «Pensé que habías olvidado el camino hacia mí».';
- }
-});
-
-// ANIMACIÓN
-const clock=new THREE.Clock();
-
-function animate(){
- requestAnimationFrame(animate);
- const t=clock.getElapsedTime();
-
- clouds.forEach((cloud,i)=>{
-  cloud.position.x+=.008+(i%3)*.002;
-  if(cloud.position.x>85)cloud.position.x=-85;
- });
-
- stars.material.opacity=.68+Math.sin(t*2)*.22;
- moonGlow.intensity=165+Math.sin(t)*15;
- gardenLight.intensity=25+Math.sin(t*2)*4;
-
- roses.forEach((r,i)=>{
-  r.rotation.z=Math.sin(t+i)*.05;
- });
-
- blackRose.position.y=Math.sin(t*1.5)*.035;
-
- // MOVIMIENTO Y COLISIONES
- if(started){
-  let forward=moveY;
-  let sideways=moveX;
-
-  if(keys['w']||keys['arrowup'])forward-=1;
-  if(keys['s']||keys['arrowdown'])forward+=1;
-  if(keys['a']||keys['arrowleft'])sideways-=1;
-  if(keys['d']||keys['arrowright'])sideways+=1;
-
-  const direction=new THREE.Vector2(sideways,forward);
-  if(direction.length()>1)direction.normalize();
-
-  if(direction.length()>.04){
-   const dx=direction.x*Math.cos(cameraAngle)+direction.y*Math.sin(cameraAngle);
-   const dz=-direction.x*Math.sin(cameraAngle)+direction.y*Math.cos(cameraAngle);
-
-   player.position.x+=dx*.12;
-   player.position.z+=dz*.12;
-   player.rotation.y=Math.atan2(dx,dz);
-
-   const walk=Math.sin(t*10)*.35;
-   player.userData.legs[0].rotation.x=walk;
-   player.userData.legs[1].rotation.x=-walk;
-   player.userData.arms[0].rotation.x=-walk*.7;
-   player.userData.arms[1].rotation.x=walk*.7;
-  }else{
-   player.userData.legs.forEach(l=>l.rotation.x=0);
-   player.userData.arms.forEach(a=>a.rotation.x=0);
-  }
-
-  player.position.x=THREE.MathUtils.clamp(player.position.x,-45,45);
-  player.position.z=THREE.MathUtils.clamp(player.position.z,-100,18);
-
-  // IMPIDE ATRAVESAR LA PUERTA SI TODAVÍA ESTÁ CERRADA
-  if(!doorOpen && Math.abs(player.position.x)<3.9 && player.position.z<-34.5){
-   player.position.z=-34.5;
-  }
-
-  // DETECTAR PROXIMIDAD A LA PUERTA Y A THE BLACK ROSE
-  const doorDistance=Math.hypot(
-   player.position.x,
-   player.position.z+39.15
-  );
-
-  nearDoor=doorDistance<5.4 && Math.abs(player.position.x)<6.2;
-  nearRose=player.position.distanceTo(blackRose.position)<5;
-
-  // MENSAJES DE EXPLORACIÓN
-  if(nearDoor && !doorOpen){
-   hint.textContent='La entrada está cerrada... toca ✧ para abrirla';
-  }else if(nearDoor && doorOpen){
-   hint.textContent='La puerta está abierta. Entra al castillo';
-  }else if(nearRose){
-   hint.textContent='Hay alguien junto a las rosas...';
-  }else if(doorOpen && player.position.z<-41){
-   hint.textContent='El castillo guarda secretos en su interior...';
-  }else{
-   hint.textContent='Explora El Castillo Papita Vagoneta';
-  }
-
-  updateCamera();
- }else{
-  camera.position.set(0,10,22);
-  camera.lookAt(0,9,-43);
- }
-
- // MOVIMIENTO SUAVE DE LAS DOS HOJAS
- animateDoor();
-
- renderer.render(scene,camera);
+part(new THREE.BoxGeometry(.34,.09,.035),roseLace,0,2.29,.2);
+part(new THREE.OctahedronGeometry(.07),silver,0,2.2,.27,.8,1.1,.8);
 }
 
-animate();
+part(new THREE.CylinderGeometry(.12,.14,.25,16),skin,0,2.42,0);
+part(new THREE.SphereGeometry(.34,32,28),skin,0,2.76,.015,.91,1.12,.88);
 
-// CAMBIO DE TAMAÑO
-window.addEventListener('resize',()=>{
- camera.aspect=innerWidth/innerHeight;
- camera.updateProjectionMatrix();
- renderer.setSize(innerWidth,innerHeight);
-});
-</script>
-</body>
-</html>
+for(const side of [-1,1]){
+part(new THREE.SphereGeometry(.075,16,12),skin,side*.33,2.75,0,.7,1,.65);
+}
+
+// OJOS, CEJAS Y MAQUILLAJE
+for(const side of [-1,1]){
+part(
+new THREE.SphereGeometry(female?.105:.085,20,16),
+eyeWhite,side*(female?.145:.14),2.79,.30,1,female?1.18:1,.42
+);
+
+part(
+new THREE.SphereGeometry(female?.065:.052,18,14),
+brownEyes,side*(female?.145:.14),2.79,.335,1,female?1.16:1,.38
+);
+
+part(new THREE.SphereGeometry(.022,12,10),eyeWhite,side*(female?.13:.13)-.012,2.81,.35);
+
+const brow=part(new THREE.BoxGeometry(.16,.035,.045),hair,side*.14,2.94,.30);
+brow.rotation.z=female?-side*.015:side*.08;
+
+if(female){
+const liner=part(new THREE.BoxGeometry(.19,.012,.018),softEyeliner,side*.145,2.865,.345);
+liner.rotation.z=-side*.035;
+
+const wing=part(new THREE.BoxGeometry(.045,.012,.016),softEyeliner,side*.245,2.875,.337);
+wing.rotation.z=side*.25;
+
+part(new THREE.SphereGeometry(.09,16,12),blushMat,side*.235,2.665,.29,.95,.35,.18);
+}
+}
+
+part(new THREE.SphereGeometry(.045,12,10),skin,0,2.68,.34,.7,1.3,.7);
+
+if(female){
+part(new THREE.SphereGeometry(.075,18,12),softLip,0,2.565,.325,.95,.34,.3);
+part(new THREE.BoxGeometry(.105,.008,.012),lipLine,0,2.57,.35);
+}else{
+part(new THREE.BoxGeometry(.11,.018,.025),material(0x86565a),0,2.57,.315);
+}
+
+// CABELLO
+part(new THREE.SphereGeometry(.39,28,22),hair,0,2.98,-.035,1.04,.82,1.08);
+part(new THREE.BoxGeometry(.66,.36,.48),hair,0,2.73,-.23);
+
+for(const side of [-1,1]){
+const lock1=part(new THREE.CapsuleGeometry(.095,.48,5,10),hair,side*.31,2.65,-.04);
+lock1.rotation.z=-side*.12;
+
+const lock2=part(new THREE.CapsuleGeometry(.075,.35,5,10),hairShade,side*.37,2.45,-.03);
+lock2.rotation.z=-side*.2;
+
+const lock3=part(new THREE.CapsuleGeometry(.065,.25,5,10),hair,side*.27,2.39,-.08);
+lock3.rotation.z=side*.18;
+}
+
+if(!female){
+const fringeLeft=part(new THREE.CapsuleGeometry(.085,.31,5,10)
