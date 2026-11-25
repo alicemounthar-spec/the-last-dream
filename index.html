@@ -320,10 +320,8 @@ document.getElementById('start').addEventListener('click',function(){
   <button class="riddleOption" data-answer="correct">Un recuerdo</button>
   <button class="riddleOption" data-answer="wrong">La luna</button>
  </div>
-</div>  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
-<script>
-// Carga clásica para evitar el bloqueo CORS de módulos ES al abrir el HTML desde content:// en Android.
-const THREE = window.THREE;  
+</div>  <script type="module">  
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';  
   
 // ESCENA  
 const scene=new THREE.Scene();  
@@ -1000,7 +998,379 @@ interior.add(glow);
 }  
 }  
   
-// Las escaleras y la galería abierta se sustituyen por habitaciones independientes.
+// ESCALERA DOBLE  
+function stairStep(x,y,z,w=5.0){
+const step=new THREE.Mesh(new THREE.BoxGeometry(w,.42,1.35),trimMat);
+step.position.set(x,y,z);
+step.castShadow=true;
+step.receiveShadow=true;
+interior.add(step);
+const nosing=new THREE.Mesh(new THREE.BoxGeometry(w,.07,.12),goldMat);
+nosing.position.set(x,y+.22,z-.61);
+interior.add(nosing);
+}
+for(let i=0;i<10;i++){
+stairStep(-5.1,.23+i*.45,-79.1+i*1.12,5.0);
+stairStep(5.1,.23+i*.45,-79.1+i*1.12,5.0);
+}
+const landing=new THREE.Mesh(new THREE.BoxGeometry(15,.5,4.5),stoneFloor);
+landing.position.set(0,4.5,-67.6);
+landing.receiveShadow=true;
+interior.add(landing);
+
+// SEGUNDO PISO REAL: GALERÍA EN FORMA DE U CON SUELO TRANSITABLE
+const upperFloorMat=new THREE.MeshStandardMaterial({color:0x463747,roughness:.34,metalness:.2});
+function upperPlatform(w,d,x,z){
+ const slab=new THREE.Mesh(new THREE.BoxGeometry(w,.42,d),upperFloorMat);
+ slab.position.set(x,4.48,z); slab.receiveShadow=true; slab.castShadow=true;
+ interior.add(slab);
+ const edge=new THREE.Mesh(new THREE.BoxGeometry(w,.09,d),pearlBorderMat);
+ edge.position.set(x,4.72,z); interior.add(edge);
+}
+upperPlatform(8.2,16,-11.5,-75.5);
+upperPlatform(8.2,16,11.5,-75.5);
+upperPlatform(24,4.2,0,-82.3);
+upperPlatform(24,4.2,0,-67.1);
+
+// Balcones interiores y barandas del segundo piso.
+for(const side of [-1,1]){
+ const rail2=new THREE.Mesh(new THREE.BoxGeometry(.16,1.05,14),goldMat);
+ rail2.position.set(side*7.1,5.25,-75.3); interior.add(rail2);
+ for(let n=0;n<11;n++){
+  const post=new THREE.Mesh(new THREE.CylinderGeometry(.055,.075,1.0,8),trimMat);
+  post.position.set(side*7.1,5.22,-81.5+n*1.25); interior.add(post);
+ }
+ // Columnas y arcos decorativos del corredor superior.
+ for(const z of [-81,-75,-69]){
+  const upperPillar=new THREE.Mesh(new THREE.CylinderGeometry(.22,.3,4.5,12),wallMat);
+  upperPillar.position.set(side*15.1,6.8,z); interior.add(upperPillar);
+  const capital2=new THREE.Mesh(new THREE.BoxGeometry(.9,.22,.9),goldMat);
+  capital2.position.set(side*15.1,9.05,z); interior.add(capital2);
+ }
+}
+// Balcón trasero con baranda, mirando hacia el gran retrato del primer piso.
+const rearRail=new THREE.Mesh(new THREE.BoxGeometry(21,.95,.16),goldMat);
+rearRail.position.set(0,5.2,-80.1); interior.add(rearRail);
+for(let n=0;n<15;n++){
+ const post=new THREE.Mesh(new THREE.CylinderGeometry(.045,.06,.95,8),trimMat);
+ post.position.set(-10+n*1.43,5.2,-80.1); interior.add(post);
+}
+// Alfombras y sillones pequeños para que el segundo nivel se sienta como una galería.
+for(const side of [-1,1]){
+ const runner=new THREE.Mesh(new THREE.BoxGeometry(3.2,.035,10),pearlCarpetMat);
+ runner.position.set(side*11.5,4.72,-75); interior.add(runner);
+ const bench=new THREE.Mesh(new THREE.BoxGeometry(2.1,.48,.72),
+  new THREE.MeshStandardMaterial({color:0x75445e,roughness:.55}));
+ bench.position.set(side*12.2,4.98,-69.2); interior.add(bench);
+ const cushion=new THREE.Mesh(new THREE.BoxGeometry(1.85,.18,.68),
+  new THREE.MeshStandardMaterial({color:0xd99db9,roughness:.75}));
+ cushion.position.set(side*12.2,5.3,-69.2); interior.add(cushion);
+}
+
+
+// BARANDILLAS
+for(const x of [-8.0,8.0]){
+const rail=new THREE.Mesh(new THREE.BoxGeometry(.18,1.15,12.5),goldMat);
+rail.position.set(x,2.7,-73);  
+interior.add(rail);  
+  
+for(let i=0;i<8;i++){  
+const baluster=new THREE.Mesh(new THREE.CylinderGeometry(.045,.06,1.8,8),trimMat);  
+baluster.position.set(x,1.8,-78+i*1.4);  
+interior.add(baluster);  
+}  
+}  
+  
+// LÁMPARAS DE ARAÑA PERLADAS  
+const chandeliers=[];  
+const chandelierLights=[];  
+  
+function createChandelier(x,z,scale=1){  
+const chandelier=new THREE.Group();  
+  
+const chain=new THREE.Mesh(new THREE.CylinderGeometry(.035,.035,5,8),goldMat);  
+chain.position.y=13;  
+chandelier.add(chain);  
+  
+const upperRing=new THREE.Mesh(new THREE.TorusGeometry(1.15,.075,10,40),pearlBorderMat);  
+upperRing.rotation.x=Math.PI/2;  
+upperRing.position.y=12;  
+chandelier.add(upperRing);  
+  
+const ring=new THREE.Mesh(new THREE.TorusGeometry(2,.12,10,40),goldMat);  
+ring.rotation.x=Math.PI/2;  
+ring.position.y=10;  
+chandelier.add(ring);  
+  
+const lowerRing=new THREE.Mesh(new THREE.TorusGeometry(1.15,.07,10,40),goldMat);  
+lowerRing.rotation.x=Math.PI/2;  
+lowerRing.position.y=8.9;  
+chandelier.add(lowerRing);  
+  
+for(let i=0;i<8;i++){  
+const a=i*Math.PI/4;  
+  
+const arm=new THREE.Mesh(new THREE.CylinderGeometry(.045,.07,2.3,8),goldMat);  
+arm.position.set(Math.cos(a)*1.2,10,Math.sin(a)*1.2);  
+arm.rotation.z=Math.cos(a)*.5;  
+arm.rotation.x=Math.sin(a)*.5;  
+chandelier.add(arm);  
+  
+const crystal=new THREE.Mesh(  
+new THREE.OctahedronGeometry(.22),  
+new THREE.MeshStandardMaterial({  
+color:0xfff1f8,  
+metalness:.35,  
+roughness:.12,  
+emissive:0xf4b9d2,  
+emissiveIntensity:.55  
+})  
+);  
+crystal.position.set(Math.cos(a)*1.45,9.45,Math.sin(a)*1.45);  
+chandelier.add(crystal);  
+  
+const candle=new THREE.Mesh(  
+new THREE.CylinderGeometry(.09,.12,.65,8),  
+new THREE.MeshStandardMaterial({color:0xfff0df,roughness:.35})  
+);  
+candle.position.set(Math.cos(a)*2,10.55,Math.sin(a)*2);  
+chandelier.add(candle);  
+  
+const flame=new THREE.Mesh(  
+new THREE.SphereGeometry(.12,10,8),  
+new THREE.MeshBasicMaterial({color:0xffd6a1})  
+);  
+flame.scale.y=1.6;  
+flame.position.set(Math.cos(a)*2,11,Math.sin(a)*2);  
+chandelier.add(flame);  
+  
+const tinyGlow=new THREE.Mesh(  
+new THREE.SphereGeometry(.23,10,8),  
+new THREE.MeshBasicMaterial({color:0xffe8d1,transparent:true,opacity:.22})  
+);  
+tinyGlow.position.set(Math.cos(a)*2,11,Math.sin(a)*2);  
+chandelier.add(tinyGlow);  
+}  
+  
+chandelier.scale.setScalar(scale);  
+chandelier.position.set(x,0,z);  
+interior.add(chandelier);  
+chandeliers.push(chandelier);  
+  
+const warmLight=new THREE.PointLight(0xffd2a1,42,30);  
+warmLight.position.set(x,10,z);  
+interior.add(warmLight);  
+chandelierLights.push(warmLight);  
+  
+const pearlLight=new THREE.PointLight(0xffc9e1,19,24);  
+pearlLight.position.set(x,7.5,z);  
+interior.add(pearlLight);  
+chandelierLights.push(pearlLight);  
+}  
+  
+// TRES CANDELABROS EN EL SALÓN  
+createChandelier(0,-58,1);  
+createChandelier(0,-70,.78);  
+createChandelier(0,-80,.68);  
+  
+// LUCES AMBIENTALES ROSA PERLADO Y CHAMPÁN  
+const hallAmbientPink=new THREE.PointLight(0xffc6df,30,42);  
+hallAmbientPink.position.set(0,7,-67);  
+interior.add(hallAmbientPink);  
+  
+const hallAmbientChampagne=new THREE.PointLight(0xffe4bd,22,35);  
+hallAmbientChampagne.position.set(0,5,-54);  
+interior.add(hallAmbientChampagne);  
+  
+const hallAmbientBack=new THREE.PointLight(0xf5c2d9,24,38);  
+hallAmbientBack.position.set(0,8,-82);  
+interior.add(hallAmbientBack);  
+  
+// APLIQUES DE PARED CON CRISTALES  
+const wallSconceLights=[];  
+  
+function createWallSconce(x,z){  
+const sconce=new THREE.Group();  
+  
+const plate=new THREE.Mesh(  
+new THREE.SphereGeometry(.32,16,12),  
+goldMat  
+);  
+plate.scale.set(.65,1.35,.35);  
+sconce.add(plate);  
+  
+const arm=new THREE.Mesh(  
+new THREE.CylinderGeometry(.045,.065,.65,8),  
+goldMat  
+);  
+arm.rotation.x=Math.PI/2;  
+arm.position.z=.25;  
+sconce.add(arm);  
+  
+const candle=new THREE.Mesh(  
+new THREE.CylinderGeometry(.09,.12,.48,10),  
+new THREE.MeshStandardMaterial({color:0xfff0dd,roughness:.4})  
+);  
+candle.position.set(0,.35,.45);  
+sconce.add(candle);  
+  
+const flame=new THREE.Mesh(  
+new THREE.SphereGeometry(.105,12,10),  
+new THREE.MeshBasicMaterial({color:0xffd6a1})  
+);  
+flame.scale.y=1.5;  
+flame.position.set(0,.64,.45);  
+sconce.add(flame);  
+  
+const crystal=new THREE.Mesh(  
+new THREE.OctahedronGeometry(.2),  
+new THREE.MeshStandardMaterial({  
+color:0xffe9f3,  
+metalness:.45,  
+roughness:.12,  
+emissive:0xf3bad2,  
+emissiveIntensity:.6  
+})  
+);  
+crystal.position.set(0,-.45,.35);  
+sconce.add(crystal);  
+  
+sconce.position.set(x,6.8,z);  
+sconce.rotation.y=x<0?Math.PI/2:-Math.PI/2;  
+interior.add(sconce);  
+  
+const light=new THREE.PointLight(0xffd0b2,12,13);  
+light.position.set(x*.91,7,z);  
+interior.add(light);  
+wallSconceLights.push(light);  
+}  
+  
+for(const side of [-1,1]){  
+for(const z of [-55,-64,-74,-81]){  
+createWallSconce(side*15.8,z);  
+}  
+}  
+  
+// CUADROS DECORATIVOS  
+for(const side of [-1,1]){  
+for(const z of [-60,-72,-82]){  
+const frame=new THREE.Mesh(new THREE.BoxGeometry(.2,3.2,2.5),goldMat);  
+frame.position.set(side*16,7,z);  
+interior.add(frame);  
+  
+const picture=new THREE.Mesh(  
+new THREE.BoxGeometry(.22,2.7,2),  
+new THREE.MeshBasicMaterial({color:0x3b1729})  
+);  
+picture.position.set(side*15.85,7,z);  
+interior.add(picture);  
+  
+const symbol=new THREE.Mesh(  
+new THREE.TorusGeometry(.65,.08,8,24),  
+new THREE.MeshBasicMaterial({color:0xc15a70})  
+);  
+symbol.position.set(side*15.68,7,z);  
+symbol.rotation.y=Math.PI/2;  
+interior.add(symbol);  
+}  
+}  
+  
+// JARRONES Y FLORES JUNTO A LA ENTRADA  
+function vase(x,z){  
+const pot=new THREE.Mesh(new THREE.CylinderGeometry(.35,.5,.9,12),trimMat);  
+pot.position.set(x,.45,z);  
+interior.add(pot);  
+  
+for(let i=0;i<5;i++){  
+const stem=new THREE.Mesh(  
+new THREE.CylinderGeometry(.025,.035,1.1,6),  
+new THREE.MeshStandardMaterial({color:0x405b39})  
+);  
+stem.position.set(x+(i-2)*.13,1.25,z);  
+stem.rotation.z=(i-2)*.15;  
+interior.add(stem);  
+  
+const bloom=new THREE.Mesh(  
+new THREE.SphereGeometry(.19,12,10),  
+new THREE.MeshStandardMaterial({color:0xe7a6c2})  
+);  
+bloom.position.set(x+(i-2)*.13,1.85,z);  
+interior.add(bloom);  
+}  
+}  
+  
+vase(-10,-51);  
+vase(10,-51);
+
+// DECORACIÓN FLORAL DEL SALÓN: JARDINERAS, TULIPANES Y LIRIOS
+const indoorPetalMats=[
+ new THREE.MeshStandardMaterial({color:0xe7a4c4,roughness:.42,emissive:0x4b2037,emissiveIntensity:.12}),
+ new THREE.MeshStandardMaterial({color:0x9c70b7,roughness:.42,emissive:0x28153a,emissiveIntensity:.12}),
+ new THREE.MeshStandardMaterial({color:0xf2c8df,roughness:.42,emissive:0x4b2037,emissiveIntensity:.1}),
+ new THREE.MeshStandardMaterial({color:0x704a91,roughness:.42,emissive:0x28153a,emissiveIntensity:.12})
+];
+const indoorStemMat=new THREE.MeshStandardMaterial({color:0x54704e,roughness:.8});
+const indoorLeafMat=new THREE.MeshStandardMaterial({color:0x66835d,roughness:.8});
+const indoorPlanterMat=new THREE.MeshStandardMaterial({color:0x493044,roughness:.5,metalness:.22});
+const indoorPlanterGold=new THREE.MeshStandardMaterial({color:0xc9a16f,roughness:.3,metalness:.65});
+function addIndoorFlower(x,z,index){
+ const f=new THREE.Group();
+ const h=.9+(index%4)*.13;
+ const stem=new THREE.Mesh(new THREE.CylinderGeometry(.035,.055,h,7),indoorStemMat);
+ stem.position.y=h/2; f.add(stem);
+ for(let k=0;k<2;k++){
+  const leaf=new THREE.Mesh(new THREE.ConeGeometry(.13,.62,7),indoorLeafMat);
+  leaf.position.set(k? .12:-.12,h*.48,0);
+  leaf.rotation.z=k?-.62:.62; f.add(leaf);
+ }
+ const petalMat=indoorPetalMats[index%indoorPetalMats.length];
+ for(let k=0;k<6;k++){
+  const a=k*Math.PI/3;
+  const petal=new THREE.Mesh(new THREE.SphereGeometry(.17,12,10),petalMat);
+  petal.scale.set(.72,1.35,.7);
+  petal.position.set(Math.cos(a)*.12,h+.02,Math.sin(a)*.12);
+  f.add(petal);
+ }
+ const center=new THREE.Mesh(new THREE.SphereGeometry(.075,10,8),indoorPlanterGold);
+ center.position.y=h+.03; f.add(center);
+ f.position.set(x,0,z); f.rotation.y=(index%5)*.7;
+ interior.add(f);
+}
+let indoorFlowerIndex=0;
+for(const side of [-1,1]){
+ for(const z of [-54.5,-62,-70,-78]){
+  const planter=new THREE.Group();
+  const base=new THREE.Mesh(new THREE.BoxGeometry(2.4,.52,3.25),indoorPlanterMat);
+  base.position.y=.26; planter.add(base);
+  const rim=new THREE.Mesh(new THREE.BoxGeometry(2.52,.13,3.38),indoorPlanterGold);
+  rim.position.y=.55; planter.add(rim);
+  const soil=new THREE.Mesh(new THREE.BoxGeometry(2.18,.1,3.02),
+   new THREE.MeshStandardMaterial({color:0x302331,roughness:1}));
+  soil.position.y=.61; planter.add(soil);
+  planter.position.set(side*10.7,0,z);
+  interior.add(planter);
+  for(let n=0;n<11;n++){
+   const fx=side*10.7+((n%4)-1.5)*.48;
+   const fz=z+(Math.floor(n/4)-1)*.92;
+   addIndoorFlower(fx,fz,indoorFlowerIndex++);
+  }
+  const bloomLight=new THREE.PointLight(side<0?0xc99be8:0xffb0d0,3.8,7);
+  bloomLight.position.set(side*10.7,2,z); interior.add(bloomLight);
+ }
+}
+
+// APLIQUES Y BANDEROLAS GÓTICAS ENTRE LOS RETRATOS
+for(const side of [-1,1]){
+ for(const z of [-56,-66,-76]){
+  const plaque=new THREE.Mesh(new THREE.BoxGeometry(.16,1.55,.72),indoorPlanterMat);
+  plaque.position.set(side*15.9,5.2,z); interior.add(plaque);
+  const lamp=new THREE.Mesh(new THREE.SphereGeometry(.2,14,12),
+   new THREE.MeshStandardMaterial({color:0xffd8e8,emissive:0xff9fc8,emissiveIntensity:1.1}));
+  lamp.position.set(side*15.72,5.5,z); interior.add(lamp);
+  const light=new THREE.PointLight(0xf3a9cc,4.2,8);
+  light.position.set(side*14.9,5.5,z); interior.add(light);
+ }
+}
 // PARTÍCULAS MÁGICAS FLOTANTES DEL VESTÍBULO  
 const magicParticles=[];  
 const particleCount=95;  
@@ -1383,15 +1753,9 @@ function canPlayerOccupy(x,z){
  // La puerta cerrada bloquea únicamente el vano central.
  if(!doorOpen && x+PLAYER_RADIUS>-3.72 && x-PLAYER_RADIUS<3.72 &&
     z+PLAYER_RADIUS>-45.05 && z-PLAYER_RADIUS<-44.15) return false;
- if(currentRoom===0){
-  for(const b of castleCollisionBoxes){
-   if(x+PLAYER_RADIUS>b.minX && x-PLAYER_RADIUS<b.maxX &&
-      z+PLAYER_RADIUS>b.minZ && z-PLAYER_RADIUS<b.maxZ) return false;
-  }
- }else{
-  const bounds=roomBounds[currentRoom];
-  if(x<bounds.minX+PLAYER_RADIUS||x>bounds.maxX-PLAYER_RADIUS||
-     z<bounds.minZ+PLAYER_RADIUS||z>bounds.maxZ-PLAYER_RADIUS) return false;
+ for(const b of castleCollisionBoxes){
+  if(x+PLAYER_RADIUS>b.minX && x-PLAYER_RADIUS<b.maxX &&
+     z+PLAYER_RADIUS>b.minZ && z-PLAYER_RADIUS<b.maxZ) return false;
  }
  for(const c of towerCollisionCircles){
   const dx=x-c.x,dz=z-c.z;
@@ -1404,15 +1768,20 @@ function canPlayerOccupy(x,z){
  return true;
 }
 
-// El castillo utiliza habitaciones a nivel de suelo; no hay cambios de altura.
-function updateStairElevation(){ player.position.y=0; }
-const roomBounds=[
- {minX:-16,maxX:16,minZ:-84,maxZ:-48},
- {minX:24,maxX:52,minZ:-80,maxZ:-50},
- {minX:62,maxX:90,minZ:-80,maxZ:-50},
- {minX:100,maxX:128,minZ:-80,maxZ:-50},
- {minX:138,maxX:166,minZ:-80,maxZ:-50}
-];
+// La posición vertical cambia al recorrer los peldaños; así se pueden subir y bajar.
+function updateStairElevation(){
+ const x=player.position.x, z=player.position.z;
+ const left=x>-7.75&&x<-2.45, right=x>2.45&&x<7.75;
+ if((left||right)&&z>=-80.2&&z<=-68.0){
+  player.position.y=THREE.MathUtils.clamp((z+80.2)/12.2,0,1)*4.5;
+ }else if(Math.abs(x)<7.55&&z>-70.1&&z<-65.0){
+  player.position.y=4.5;
+ }else if(z<=-65.0&&z>=-84.5&&Math.abs(x)<=15.2){
+  player.position.y=4.5;
+ }else{
+  player.position.y=0;
+ }
+}
 
   
   
@@ -1505,12 +1874,17 @@ clothMarker.position.copy(questProps.cloth.position); scene.add(clothMarker);
 
 questProps.musicbox=createQuestProp('musicbox',10,-68);
 questProps.memory3=createQuestProp('memory',-10,-78);
-questProps.book=createQuestProp('book',34,-62);
-questProps.note=createQuestProp('note',43,-70);
-questProps.watch=createQuestProp('watch',70,-62);
-questProps.ribbon=createQuestProp('ribbon',83,-70);
-questProps.chest=createQuestProp('chest',106,-64);
-questProps.letter=createQuestProp('letter',145,-64);
+questProps.book=createQuestProp('book',12.2,-76.5);
+questProps.book.position.y=4.55;
+questProps.note=createQuestProp('note',12.2,-70.5);
+questProps.note.position.y=4.55;
+questProps.watch=createQuestProp('watch',-12.2,-70.5);
+questProps.watch.position.y=4.55;
+questProps.ribbon=createQuestProp('ribbon',-12.2,-76.5);
+questProps.ribbon.position.y=4.55;
+questProps.chest=createQuestProp('chest',0,-81);
+questProps.chest.position.y=4.55;
+questProps.letter=createQuestProp('letter',0,-30);
 
 // ESTANTERÍA DE LA BIBLIOTECA
 const libraryWood=new THREE.MeshStandardMaterial({color:0x493044,roughness:.7});
@@ -1529,81 +1903,6 @@ for(const z of [-79,-75]){
 }
   
   
-
-// HABITACIONES ENCADENADAS: CADA PUERTA LLEVA AL SIGUIENTE ESPACIO
-const sideRoomMaterial=new THREE.MeshStandardMaterial({color:0x332839,roughness:.72});
-const sideRoomFloorMaterial=new THREE.MeshStandardMaterial({color:0x493849,roughness:.38,metalness:.16});
-const roomDoorWood=new THREE.MeshStandardMaterial({color:0x432a3d,roughness:.5,metalness:.18});
-const roomDoorGold=new THREE.MeshStandardMaterial({color:0xc6a06c,roughness:.28,metalness:.68});
-const sideRooms=[];
-function buildSideRoom(cx,cz,roomTitle,accent){
- const g=new THREE.Group();
- const floor=new THREE.Mesh(new THREE.BoxGeometry(28,.36,30),sideRoomFloorMaterial);
- floor.position.set(cx,-.2,cz); floor.receiveShadow=true; g.add(floor);
- // Four solid walls and a decorated back wall.
- for(const x of [cx-14,cx+14]){
-  const wall=new THREE.Mesh(new THREE.BoxGeometry(.65,10,30),sideRoomMaterial);
-  wall.position.set(x,5,cz); wall.receiveShadow=true; g.add(wall);
- }
- for(const z of [cz-15,cz+15]){
-  const wall=new THREE.Mesh(new THREE.BoxGeometry(28,10,.65),sideRoomMaterial);
-  wall.position.set(cx,5,z); wall.receiveShadow=true; g.add(wall);
- }
- const ceilingTrim=new THREE.Mesh(new THREE.BoxGeometry(27.8,.22,29.8),roomDoorGold);
- ceilingTrim.position.set(cx,9.8,cz); g.add(ceilingTrim);
- const rug=new THREE.Mesh(new THREE.BoxGeometry(8,.045,19),pearlCarpetMat);
- rug.position.set(cx,.015,cz); g.add(rug);
- for(const side of [-1,1]){
-  const planter=new THREE.Mesh(new THREE.BoxGeometry(2.2,.5,4.2),roomDoorWood);
-  planter.position.set(cx+side*10.7,.25,cz-2); g.add(planter);
-  for(let n=0;n<8;n++){
-   const stem=new THREE.Mesh(new THREE.CylinderGeometry(.025,.045,.9,7),indoorStemMat);
-   stem.position.set(cx+side*10.7+((n%4)-1.5)*.38,.95,cz-3.1+Math.floor(n/4)*2.1);
-   g.add(stem);
-   const bloom=new THREE.Mesh(new THREE.SphereGeometry(.22,12,10),indoorPetalMats[(n+(accent||0))%indoorPetalMats.length]);
-   bloom.scale.set(.9,1.2,.9);
-   bloom.position.set(stem.position.x,1.45,stem.position.z); g.add(bloom);
-  }
-  const sconce=new THREE.Mesh(new THREE.SphereGeometry(.22,14,12),
-   new THREE.MeshStandardMaterial({color:0xffdce9,emissive:0xffa9cc,emissiveIntensity:1.0}));
-  sconce.position.set(cx+side*13.45,5.3,cz); g.add(sconce);
-  const lamp=new THREE.PointLight(accent%2?0xd1a0ef:0xffb5d2,5,13);
-  lamp.position.set(cx+side*11.8,5.2,cz); g.add(lamp);
- }
- const medallion=new THREE.Mesh(new THREE.TorusGeometry(1.2,.08,10,40),roomDoorGold);
- medallion.position.set(cx,6.5,cz-14.55); g.add(medallion);
- const light=new THREE.PointLight(accent%2?0xd9b0f0:0xffc5dc,12,25);
- light.position.set(cx,7,cz); g.add(light);
- interior.add(g);
- sideRooms.push(g);
-}
-buildSideRoom(38,-65,"La biblioteca silenciosa",1);
-buildSideRoom(76,-65,"La habitación de los recuerdos",2);
-buildSideRoom(114,-65,"La cámara del relicario",3);
-buildSideRoom(152,-65,"La última estancia",0);
-
-// PUERTAS ORNAMENTALES INTERACTIVAS ENTRE HABITACIONES
-function createRoomDoor(x,z,label){
- const d=new THREE.Group();
- const frame=new THREE.Mesh(new THREE.BoxGeometry(3.3,5.6,.38),roomDoorGold);
- frame.position.y=2.8; d.add(frame);
- const inset=new THREE.Mesh(new THREE.BoxGeometry(2.75,5.05,.22),roomDoorWood);
- inset.position.set(0,2.8,.22); d.add(inset);
- const leaf=new THREE.Mesh(new THREE.BoxGeometry(1.25,4.8,.14),roomDoorGold);
- leaf.position.set(-.68,2.8,.34); d.add(leaf);
- const leaf2=leaf.clone(); leaf2.position.x=.68; d.add(leaf2);
- const knob=new THREE.Mesh(new THREE.SphereGeometry(.12,12,10),pearlBorderMat);
- knob.position.set(.48,2.75,.48); d.add(knob);
- const glow=new THREE.PointLight(0xffc4dd,4,8); glow.position.set(0,3.3,1); d.add(glow);
- d.position.set(x,0,z); scene.add(d);
- d.userData.label=label;
- return d;
-}
-questProps.roomDoor1=createRoomDoor(10,-78,"Puerta de la biblioteca");
-questProps.roomDoor2=createRoomDoor(48,-78,"Puerta de la habitación de los recuerdos");
-questProps.roomDoor3=createRoomDoor(86,-78,"Puerta de la cámara del relicario");
-questProps.roomDoor4=createRoomDoor(124,-78,"Puerta de la última estancia");
-
 // CÁMARA  
 let cameraAngle=0,verticalAngle=.18;  
 const cameraDistance=8,cameraHeight=2.1;  
@@ -1711,7 +2010,7 @@ keys[e.key.toLowerCase()]=false;
 });  
   
 // CAPÍTULO I: EL CASTILLO DE LOS RECUERDOS
-let started=!!window.__dreamStartRequested,nearRose=false,nearDoor=false,doorOpen=false,insideCastle=false,currentRoom=0;
+let started=!!window.__dreamStartRequested,nearRose=false,nearDoor=false,doorOpen=false,insideCastle=false;
 function showGameInterface(){
  renderer.domElement.style.display='block';
  document.getElementById('intro').style.display='none';
@@ -1727,8 +2026,6 @@ function showGameInterface(){
  document.getElementById('questPanel').style.display='none';
  document.getElementById('inventoryPanel').style.display='none';
 }
-// Al pulsar ENTRAR, mostrar también el canvas 3D y la interfaz del juego.
-document.getElementById('start').addEventListener('click',showGameInterface);
 if(started){showGameInterface();}
 let mission=0,hasKey=false,riddleSolved=false,noteCollected=false,chestOpened=false;
 let memoriesFound=0,roomObjectsFound=0,activeTarget=null,hasCloth=false,musicboxPlayed=false;
@@ -1765,7 +2062,7 @@ const missionDescriptions=[
 ];
 
 function refreshQuest(){
- questText.textContent=mission===2?(!hasCloth?'PAÑUELO: busca el destello rosa sobre la mesita junto a los sillones del salón.':!collected.has('painting')?'RETRATO: el cuadro enorme está de frente, en la pared del fondo del salón.':!musicboxPlayed?'CAJITA MUSICAL: busca el destello en el lado derecho del salón.':'Sigue las luces del salón para encontrar el siguiente recuerdo.'):missionDescriptions[mission];
+ questText.textContent=mission===2?(!hasCloth?'PAÑUELO: busca sobre la mesita del lado izquierdo del salón, cerca de los sillones. Sigue el pequeño destello rosa.':!collected.has('painting')?'RETRATO: está enorme y de frente, en la pared del fondo, justo al entrar. Acércate por el pasillo central.':!musicboxPlayed?'CAJITA MUSICAL: busca el brillo junto al extremo derecho del salón, cerca del pie de la escalera.':'Sigue las luces del salón para encontrar el siguiente recuerdo.'):missionDescriptions[mission];
  questProgress.textContent=mission===2?`El salón de los ecos · ${memoriesFound}/3 recuerdos`:`${missionNames[mission]} · ${mission===7?'5/5':mission===6?'4/5':mission>=4?'3/5':mission===3?'2/5':mission>=1?'1/5':'0/5'} etapas`;
  status.textContent=mission===7?'CAPÍTULO I · COMPLETADO':`CAPÍTULO I · ${missionNames[mission].toUpperCase()}`;
  questProps.key.visible=mission===0&&!hasKey;
@@ -1779,18 +2076,6 @@ function refreshQuest(){
  questProps.ribbon.visible=mission===4&&!collected.has('ribbon');
  questProps.chest.visible=mission===5&&!chestOpened;
  questProps.letter.visible=mission===6;
- questProps.roomDoor1.visible=currentRoom===0&&mission>=3;
- questProps.roomDoor2.visible=currentRoom===1&&mission>=4;
- questProps.roomDoor3.visible=currentRoom===2&&mission>=5;
- questProps.roomDoor4.visible=currentRoom===3&&mission>=6;
- questProps.book.visible=currentRoom===1&&mission===3&&!riddleSolved;
- questProps.note.visible=currentRoom===1&&mission===3&&riddleSolved&&!noteCollected;
- questProps.watch.visible=currentRoom===2&&mission===4&&!collected.has('watch');
- questProps.ribbon.visible=currentRoom===2&&mission===4&&!collected.has('ribbon');
- questProps.chest.visible=currentRoom===3&&mission===5&&!chestOpened;
- questProps.letter.visible=currentRoom===4&&mission===6;
-
-
 }
 function addInventory(name,icon){
  inventory.push({name,icon});
@@ -1843,26 +2128,7 @@ function revealPainting(){
  const texture=new THREE.CanvasTexture(canvas);painting.userData.photoSurface.material=new THREE.MeshBasicMaterial({map:texture});painting.userData.photoSurface.material.needsUpdate=true;painting.userData.cleaningProgress=0;
  memoriesFound=1;collected.add('painting');addInventory('Fotografía de nuestro primer encuentro','▣');playOriginalPiano();message.textContent='El protagonista pasa el pañuelo lentamente por el cristal. El polvo comienza a desprenderse…';
 }
-function enterNextRoom(nextRoom){
- currentRoom=nextRoom;
- const bounds=roomBounds[currentRoom];
- player.position.set(bounds.minX+3,0,-65);
- player.rotation.y=Math.PI/2;
- cameraAngle=Math.PI/2;
- message.textContent=[
-  '',
-  'La puerta se cierra suavemente detrás de ti. Has entrado en la biblioteca silenciosa.',
-  'La siguiente puerta te conduce a una habitación llena de recuerdos.',
-  'Has llegado a una cámara tranquila. Aquí te espera el relicario.',
-  'La última puerta se abre hacia una estancia iluminada por rosas.'
- ][nextRoom];
- refreshQuest();
-}
 function collectTarget(id){
- if(id==='roomDoor1'){ if(mission<3){message.textContent='La puerta sigue cerrada. Primero reúne los tres recuerdos del salón.';return;} enterNextRoom(1);return; }
- if(id==='roomDoor2'){ if(mission<4){message.textContent='Primero encuentra la nota escondida en la biblioteca.';return;} enterNextRoom(2);return; }
- if(id==='roomDoor3'){ if(mission<5){message.textContent='La puerta se abrirá cuando encuentres el reloj y la cinta.';return;} enterNextRoom(3);return; }
- if(id==='roomDoor4'){ if(mission<6){message.textContent='Primero debes abrir el relicario.';return;} enterNextRoom(4);return; }
  if(id==='cloth'){
   hasCloth=true;collected.add('cloth');addInventory('Pañuelo de encaje','❀');message.textContent='Encuentras un pañuelo de encaje. Quizá sirva para limpiar el cuadro empolvado.';
  }else if(id==='painting'){
@@ -2007,7 +2273,7 @@ blackRose.position.y=Math.sin(t*1.5)*.035;
   
 // FLOTACIÓN SUAVE DE LOS OBJETOS INTERACTIVOS
 Object.values(questProps).forEach((item,i)=>{
- if(item.visible){if(item!==questProps.painting&&!String(Object.keys(questProps)[i]||'').startsWith('roomDoor'))item.rotation.y=Math.sin(t*.8+i)*.12;if(!String(Object.keys(questProps)[i]||'').startsWith('roomDoor'))item.position.y=.12+Math.sin(t*1.8+i)*.09;}
+ if(item.visible){if(item!==questProps.painting)item.rotation.y=Math.sin(t*.8+i)*.12;item.position.y=.12+Math.sin(t*1.8+i)*.09;}
  if(item.userData.dancers){item.userData.dancers.forEach((d,j)=>{d.rotation.y=Math.sin(t*2.4+j*Math.PI)*.55;d.rotation.z=Math.sin(t*2+j)*.12;});}
 });
 // LIMPIEZA PROGRESIVA DEL RETRATO: la fotografía solo aparece cuando el polvo se desvanece.
@@ -2125,19 +2391,19 @@ player.userData.arms.forEach(a=>a.rotation.x=0);
 walkingDistance=0;  
 }  
   
-player.position.x=THREE.MathUtils.clamp(player.position.x,-5,170);  
+player.position.x=THREE.MathUtils.clamp(player.position.x,-45,45);  
 player.position.z=THREE.MathUtils.clamp(player.position.z,-100,18);  
   
 nearRose=player.position.distanceTo(blackRose.position)<5;
 nearDoor=!doorOpen&&Math.abs(player.position.x)<5.5&&player.position.z<-38&&player.position.z>-46;
-insideCastle=doorOpen;
+insideCastle=doorOpen&&player.position.z<-49&&player.position.z>-88&&Math.abs(player.position.x)<16;
 activeTarget=getNearbyTarget();
 
 if(activeTarget){
  const targetNames={
   key:'La llave antigua',painting:'El retrato empolvado',cloth:'Un pañuelo de encaje',musicbox:'Una cajita musical',memory3:'El tercer recuerdo',
   book:'Un libro parece llamarte',note:'Una nota entre las páginas',
-  watch:'Un reloj detenido',ribbon:'Una cinta de recuerdo',chest:'Una caja cerrada',letter:'Una carta sellada',roomDoor1:'Puerta hacia la biblioteca',roomDoor2:'Puerta hacia la siguiente habitación',roomDoor3:'Puerta hacia la cámara del relicario',roomDoor4:'Puerta hacia la última estancia'
+  watch:'Un reloj detenido',ribbon:'Una cinta de recuerdo',chest:'Una caja cerrada',letter:'Una carta sellada'
  };
  hint.textContent=`${targetNames[activeTarget.id]} · pulsa ✧ para interactuar`;
 }else if(nearDoor){
@@ -2148,7 +2414,7 @@ if(activeTarget){
  if(mission===2&&!hasCloth) hint.textContent='PISTA: pañuelo sobre la mesita del lado izquierdo, junto a los sillones.';
  else if(mission===2&&!collected.has('painting')) hint.textContent='PISTA: el gran retrato está de frente, en la pared del fondo.';
  else if(mission===2&&!musicboxPlayed) hint.textContent='PISTA: busca la cajita musical hacia el lado derecho del salón.';
- else hint.textContent='Explora esta habitación. La puerta se abrirá cuando completes sus recuerdos.';
+ else hint.textContent='Explora ambos niveles. Las escaleras conducen a la galería del segundo piso.';
 }else{
  hint.textContent=mission===0?'Busca un destello entre los jardines':'Explora los alrededores del castillo';
 }  
